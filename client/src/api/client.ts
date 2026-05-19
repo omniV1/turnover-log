@@ -56,3 +56,11 @@ export async function apiPost<T>(path: string, body: unknown): Promise<T> {
   })
   return handleResponse<T>(res)
 }
+
+export async function apiPatch<T>(path: string): Promise<T> {
+  const res = await fetch(`${baseUrl}${path}`, {
+    method: 'PATCH',
+    headers: { ...authHeaders() },
+  })
+  return handleResponse<T>(res)
+}

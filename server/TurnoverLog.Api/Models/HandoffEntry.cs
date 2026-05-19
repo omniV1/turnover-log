@@ -7,7 +7,9 @@ public class HandoffEntry
     public string Summary { get; set; } = string.Empty;
     public HandoffSeverity Severity { get; set; }
     public HandoffStatus Status { get; set; } = HandoffStatus.Open;
+    public string? CreatedByUserId { get; set; }
     public string CreatedBy { get; set; } = string.Empty;
     public DateTime CreatedAtUtc { get; set; }
+    public string? ResolvedBy { get; set; }
     public DateTime? ResolvedAtUtc { get; set; }
 }

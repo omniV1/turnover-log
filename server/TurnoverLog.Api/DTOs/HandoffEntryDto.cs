@@ -10,6 +10,7 @@ public record HandoffEntryDto(
     HandoffStatus Status,
     string CreatedBy,
     DateTime CreatedAtUtc,
+    string? ResolvedBy,
     DateTime? ResolvedAtUtc);
 
 public record CreateHandoffRequest(

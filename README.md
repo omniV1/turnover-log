@@ -7,6 +7,7 @@ Digital shift handoff board for maintenance teams — open discrepancies, equipm
 - **API:** ASP.NET Core 8, EF Core, SQL Server (LocalDB), Swagger
 - **Client:** React 18, TypeScript, Vite, Tailwind CSS
 - **Auth:** JWT login/register (demo user below)
+- **Notifications:** Supervisor email on handoff open/close (SMTP or local outbox in dev)
 - **Planned:** xUnit tests, Azure + Vercel deploy
 
 ### Demo login
@@ -17,6 +18,23 @@ Digital shift handoff board for maintenance teams — open discrepancies, equipm
 | Password | `Demo1234!` |
 
 Handoff routes require a Bearer token. `/api/health` stays public.
+
+### Supervisor email notifications
+
+Each user registers with a **supervisor email**. When a handoff is **opened** or **closed**, the API emails the supervisor with equipment tag, severity, description, who opened/closed it, UTC timestamps, and time open.
+
+**Local dev (no SMTP):** Leave `Email:SmtpHost` empty in `appsettings.json`. Messages are written as `.eml` files under `server/TurnoverLog.Api/email-outbox/` (open in Outlook or any mail client).
+
+**Production:** Set SMTP in `appsettings` or environment variables:
+
+| Setting | Example |
+| --- | --- |
+| `Email__SmtpHost` | `smtp.sendgrid.net` |
+| `Email__SmtpPort` | `587` |
+| `Email__SmtpUser` / `Email__SmtpPassword` | API credentials |
+| `Email__FromAddress` | `noreply@yourdomain.com` |
+
+Demo user supervisor: `supervisor@turnover.local`.
 
 ## Prerequisites
 

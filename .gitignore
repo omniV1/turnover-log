@@ -36,6 +36,10 @@ Thumbs.db
 *.log
 npm-debug.log*
 
+# Email dev outbox
+email-outbox/
+server/TurnoverLog.Api/email-outbox/
+
 # Database (local dev)
 *.db
 *.db-shm

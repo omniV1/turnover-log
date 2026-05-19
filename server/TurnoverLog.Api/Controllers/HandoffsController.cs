@@ -1,10 +1,12 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TurnoverLog.Api.Data;
 using TurnoverLog.Api.DTOs;
 using TurnoverLog.Api.Models;
+using TurnoverLog.Api.Services;
 
 namespace TurnoverLog.Api.Controllers;
 
@@ -14,8 +16,18 @@ namespace TurnoverLog.Api.Controllers;
 public class HandoffsController : ControllerBase
 {
     private readonly TurnoverLogDbContext _db;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly HandoffNotificationService _notifications;
 
-    public HandoffsController(TurnoverLogDbContext db) => _db = db;
+    public HandoffsController(
+        TurnoverLogDbContext db,
+        UserManager<ApplicationUser> userManager,
+        HandoffNotificationService notifications)
+    {
+        _db = db;
+        _userManager = userManager;
+        _notifications = notifications;
+    }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<HandoffEntryDto>>> GetAll(
@@ -51,6 +63,11 @@ public class HandoffsController : ControllerBase
         if (string.IsNullOrWhiteSpace(request.EquipmentTag) || string.IsNullOrWhiteSpace(request.Summary))
             return BadRequest(new { message = "EquipmentTag and Summary are required." });
 
+        var user = await GetCurrentUserAsync();
+        if (user is null)
+            return Unauthorized();
+
+        var displayName = user.DisplayName ?? user.Email ?? "unknown";
         var entry = new HandoffEntry
         {
             Id = Guid.NewGuid(),
@@ -58,12 +75,19 @@ public class HandoffsController : ControllerBase
             Summary = request.Summary.Trim(),
             Severity = request.Severity,
             Status = HandoffStatus.Open,
-            CreatedBy = GetCurrentUserDisplayName(),
+            CreatedByUserId = user.Id,
+            CreatedBy = displayName,
             CreatedAtUtc = DateTime.UtcNow,
         };
 
         _db.HandoffEntries.Add(entry);
         await _db.SaveChangesAsync(cancellationToken);
+
+        await _notifications.NotifySupervisorAsync(
+            entry,
+            HandoffNotificationEvent.Opened,
+            user,
+            cancellationToken);
 
         return CreatedAtAction(nameof(GetById), new { id = entry.Id }, Map(entry));
     }
@@ -75,19 +99,47 @@ public class HandoffsController : ControllerBase
         if (entry is null)
             return NotFound();
 
+        if (entry.Status == HandoffStatus.Resolved)
+            return BadRequest(new { message = "Handoff is already resolved." });
+
+        var user = await GetCurrentUserAsync();
+        if (user is null)
+            return Unauthorized();
+
         entry.Status = HandoffStatus.Resolved;
         entry.ResolvedAtUtc = DateTime.UtcNow;
+        entry.ResolvedBy = user.DisplayName ?? user.Email ?? "unknown";
         await _db.SaveChangesAsync(cancellationToken);
+
+        await _notifications.NotifySupervisorAsync(
+            entry,
+            HandoffNotificationEvent.Closed,
+            user,
+            cancellationToken);
 
         return Ok(Map(entry));
     }
 
-    private string GetCurrentUserDisplayName() =>
-        User.FindFirstValue(ClaimTypes.Name)
-        ?? User.FindFirstValue(ClaimTypes.Email)
-        ?? User.Identity?.Name
-        ?? "unknown";
+    private async Task<ApplicationUser?> GetCurrentUserAsync()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? User.FindFirstValue(ClaimTypes.Name);
+        if (string.IsNullOrEmpty(userId))
+            return null;
+
+        return await _userManager.FindByIdAsync(userId)
+            ?? await _userManager.FindByNameAsync(userId);
+    }
 
     private static HandoffEntryDto Map(HandoffEntry e) =>
-        new(e.Id, e.EquipmentTag, e.Summary, e.Severity, e.Status, e.CreatedBy, e.CreatedAtUtc, e.ResolvedAtUtc);
+        new(
+            e.Id,
+            e.EquipmentTag,
+            e.Summary,
+            e.Severity,
+            e.Status,
+            e.CreatedBy,
+            e.CreatedAtUtc,
+            e.ResolvedBy,
+            e.ResolvedAtUtc);
 }

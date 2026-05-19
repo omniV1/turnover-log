@@ -1,6 +1,6 @@
 namespace TurnoverLog.Api.DTOs;
 
-public record RegisterRequest(string Email, string Password, string? DisplayName);
+public record RegisterRequest(string Email, string Password, string SupervisorEmail, string? DisplayName);
 
 public record LoginRequest(string Email, string Password);
 

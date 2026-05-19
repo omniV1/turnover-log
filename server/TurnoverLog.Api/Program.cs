@@ -12,6 +12,7 @@ using TurnoverLog.Api.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection(EmailSettings.SectionName));
 var jwtSettings = builder.Configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>()
     ?? throw new InvalidOperationException("Jwt configuration is required.");
 
@@ -87,6 +88,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<HandoffNotificationService>();
+builder.Services.AddSingleton<IEmailSender, EmailSender>();
 
 var clientOrigin = builder.Configuration["ClientOrigin"] ?? "http://localhost:5173";
 builder.Services.AddCors(options =>
@@ -131,8 +134,16 @@ static async Task SeedDemoUserAsync(IServiceProvider services)
     const string demoPassword = "Demo1234!";
 
     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-    if (await userManager.FindByEmailAsync(demoEmail) is not null)
+    var existing = await userManager.FindByEmailAsync(demoEmail);
+    if (existing is not null)
+    {
+        if (string.IsNullOrWhiteSpace(existing.SupervisorEmail))
+        {
+            existing.SupervisorEmail = "supervisor@turnover.local";
+            await userManager.UpdateAsync(existing);
+        }
         return;
+    }
 
     var user = new ApplicationUser
     {
@@ -140,6 +151,7 @@ static async Task SeedDemoUserAsync(IServiceProvider services)
         Email = demoEmail,
         EmailConfirmed = true,
         DisplayName = "demo.shift-lead",
+        SupervisorEmail = "supervisor@turnover.local",
     };
 
     var result = await userManager.CreateAsync(user, demoPassword);

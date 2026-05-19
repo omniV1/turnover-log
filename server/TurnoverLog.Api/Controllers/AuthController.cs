@@ -32,6 +32,9 @@ public class AuthController : ControllerBase
         if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
             return BadRequest(new { message = "Email and password are required." });
 
+        if (string.IsNullOrWhiteSpace(request.SupervisorEmail))
+            return BadRequest(new { message = "Supervisor email is required." });
+
         var email = request.Email.Trim().ToLowerInvariant();
         var existing = await _userManager.FindByEmailAsync(email);
         if (existing is not null)
@@ -45,6 +48,7 @@ public class AuthController : ControllerBase
             DisplayName = string.IsNullOrWhiteSpace(request.DisplayName)
                 ? email.Split('@')[0]
                 : request.DisplayName.Trim(),
+            SupervisorEmail = request.SupervisorEmail.Trim().ToLowerInvariant(),
         };
 
         var result = await _userManager.CreateAsync(user, request.Password);

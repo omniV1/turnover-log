@@ -12,6 +12,7 @@ export function LoginPage({ onAuthenticated }: LoginPageProps) {
   const [email, setEmail] = useState('demo@turnover.local')
   const [password, setPassword] = useState('Demo1234!')
   const [displayName, setDisplayName] = useState('')
+  const [supervisorEmail, setSupervisorEmail] = useState('supervisor@turnover.local')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -26,6 +27,7 @@ export function LoginPage({ onAuthenticated }: LoginPageProps) {
           : await register({
               email,
               password,
+              supervisorEmail,
               displayName: displayName.trim() || undefined,
             })
 
@@ -78,6 +80,22 @@ export function LoginPage({ onAuthenticated }: LoginPageProps) {
               className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100 outline-none focus:border-cyan-600"
             />
           </div>
+
+          {mode === 'register' && (
+            <div>
+              <label htmlFor="supervisorEmail" className="block text-sm text-slate-400">
+                Supervisor email (notified on open/close)
+              </label>
+              <input
+                id="supervisorEmail"
+                type="email"
+                required
+                value={supervisorEmail}
+                onChange={(e) => setSupervisorEmail(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100 outline-none focus:border-cyan-600"
+              />
+            </div>
+          )}
 
           {mode === 'register' && (
             <div>

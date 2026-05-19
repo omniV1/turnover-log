@@ -9,6 +9,7 @@ export interface HandoffEntry {
   status: HandoffStatus | number
   createdBy: string
   createdAtUtc: string
+  resolvedBy: string | null
   resolvedAtUtc: string | null
 }
 
