@@ -16,6 +16,7 @@ globs: "**/*"
 - Keep commits small and descriptive
 - DRY: shared form styles (`client/src/styles/forms.ts`), UI fields (`components/ui/FormField.tsx`), `getErrorMessage`, `useAsyncAction` on client; `ApplicationUserExtensions`, `ICurrentUserService`, `HandoffMapper` on API
 - API runs on http://localhost:5000; client on http://localhost:5173 with Vite `/api` proxy
+- Production: Vercel (`VITE_API_URL`) + Render Docker API + PostgreSQL (`DATABASE_URL`); see `docs/DEPLOY.md`
 
 ## Structure
 - `server/TurnoverLog.Api/` — Web API

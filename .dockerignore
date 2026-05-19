@@ -1,0 +1,9 @@
+**/bin/
+**/obj/
+**/node_modules/
+**/dist/
+**/.git/
+**/email-outbox/
+**/.env
+**/.env.*
+!**/.env.production.example

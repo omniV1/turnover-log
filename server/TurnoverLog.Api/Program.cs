@@ -11,6 +11,10 @@ using TurnoverLog.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var port = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrWhiteSpace(port))
+    builder.WebHost.UseUrls($"http://+:{port}");
+
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection(EmailSettings.SectionName));
 var jwtSettings = builder.Configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>()
@@ -50,8 +54,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-builder.Services.AddDbContext<TurnoverLogDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+var databaseProvider = builder.Services.AddTurnoverLogDatabase(builder.Configuration);
 
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -93,14 +96,7 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<HandoffNotificationService>();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
 
-var clientOrigin = builder.Configuration["ClientOrigin"] ?? "http://localhost:5173";
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("Client", policy =>
-        policy.WithOrigins(clientOrigin)
-            .AllowAnyHeader()
-            .AllowAnyMethod());
-});
+builder.Services.AddTurnoverLogCors(builder.Configuration);
 
 var app = builder.Build();
 
@@ -117,12 +113,11 @@ app.MapControllers();
 
 if (!app.Environment.IsEnvironment("Testing"))
 {
-    using (var scope = app.Services.CreateScope())
-    {
-        var db = scope.ServiceProvider.GetRequiredService<TurnoverLogDbContext>();
-        await db.Database.MigrateAsync();
-        await SeedDataAsync(scope.ServiceProvider, db);
-    }
+    await app.MigrateTurnoverLogDatabaseAsync(databaseProvider);
+
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<TurnoverLogDbContext>();
+    await SeedDataAsync(scope.ServiceProvider, db);
 }
 
 app.Run();

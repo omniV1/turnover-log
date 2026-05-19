@@ -9,7 +9,7 @@ Digital shift handoff board for maintenance teams — open discrepancies, equipm
 - **Auth:** JWT login/register (demo user below)
 - **Notifications:** Supervisor email on handoff open/close (SMTP or local outbox in dev)
 - **Tests:** xUnit integration tests (`server/TurnoverLog.Api.Tests`)
-- **Planned:** Azure + Vercel deploy
+- **Deploy:** Vercel (client) + Render (API + PostgreSQL) — see [docs/DEPLOY.md](docs/DEPLOY.md)
 
 ### Demo login
 
@@ -41,7 +41,8 @@ Demo user supervisor: `supervisor@turnover.local`.
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download)
 - [Node.js 20+](https://nodejs.org/)
-- SQL Server LocalDB (included with Visual Studio) or SQL Server Express
+- SQL Server LocalDB (included with Visual Studio) or SQL Server Express  
+- Production API uses **PostgreSQL** on Render (configured automatically via `DATABASE_URL`)
 
 ## Local development
 
@@ -87,14 +88,14 @@ turnover-log/
 └── .github/workflows/           # CI
 ```
 
-## Git remote
+## Deploy
 
-Create `github.com/omniV1/turnover-log` and push:
+| Service | Host |
+| --- | --- |
+| React SPA | [Vercel](https://vercel.com) (`client/`, set `VITE_API_URL`) |
+| API + DB | [Render](https://render.com) (`render.yaml` blueprint) |
 
-```powershell
-git remote add origin https://github.com/omniV1/turnover-log.git
-git push -u origin master
-```
+Step-by-step: **[docs/DEPLOY.md](docs/DEPLOY.md)**
 
 ## License
 
