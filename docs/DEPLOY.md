@@ -67,8 +67,8 @@ Preview deployments on `*.vercel.app` are allowed by API CORS automatically. Pro
 
 ## 3. Verify end-to-end
 
-1. Open Vercel URL → sign in with demo user (`demo@turnover.local` / `Demo1234!`) if seed ran on API startup.
-2. Create a handoff → confirm list loads.
+1. Open Vercel URL → sign in (demo accounts in README are optional; the board starts empty).
+2. Create a handoff → confirm it appears in the list.
 3. On Render, check logs for errors; email uses outbox unless SMTP is configured.
 
 ---
