@@ -1,121 +1,122 @@
 import type { StatusFilter } from '@/lib/handoffDisplay'
 
 /**
- * Turnover Log product voice — maintenance-native, plain, and readable.
- * Prefer short sentences; avoid generic SaaS phrasing ("dashboard", "leverage", etc.).
+ * Turnover Log product voice — warm, plain, and easy to read.
+ * Maintenance context without heavy jargon; short sentences for clarity.
  */
 export const copy = {
   brand: {
     name: 'Turnover Log',
-    tagline: 'Shift handoff for line maintenance crews',
+    tagline: 'A simple way to share shift notes between maintenance teams',
   },
 
   auth: {
-    heroTitle: 'Hand the shift off on one board',
-    heroHighlight: 'built for the line',
+    heroTitle: 'Keep your shift notes in one place',
+    heroHighlight: 'for maintenance teams',
     heroBody:
-      'Squawks, work performed, and who needs to know — captured before the next crew picks up the wrench.',
+      'Record what is open, what you worked on, and who should be informed — so the next shift can pick up smoothly.',
     highlights: [
       {
-        title: 'Turnover at crew change',
-        text: 'Log what is open, what you touched, and what is still waiting — while it is fresh.',
+        title: 'Notes at shift change',
+        text: 'Write down what is still open, what you finished, and anything waiting on parts or approval.',
       },
       {
-        title: 'Line lead on watch',
-        text: 'Urgent items reach your lead’s inbox when a handoff opens or closes on their watch.',
+        title: 'Supervisor updates',
+        text: 'Your supervisor can see when a handoff is opened or closed, if you add their email at registration.',
       },
     ],
-    accessLabel: 'Crew sign-in',
-    signInTitle: 'Report to the hangar board',
-    registerTitle: 'Join the maintenance crew',
-    signInDesc: 'Use the email and password your shop issued for this board.',
+    accessLabel: 'Sign in',
+    signInTitle: 'Welcome back',
+    registerTitle: 'Create an account',
+    signInDesc: 'Use the email and password you registered with.',
     registerDesc:
-      'Add your lead’s email so they see handoffs open and close on their watch.',
-    displayName: 'Name on the board',
+      'Include your supervisor’s email if you would like them to receive handoff updates.',
+    displayName: 'Your name',
     displayNamePlaceholder: 'e.g. Alex M.',
-    email: 'Work email',
+    email: 'Email',
     password: 'Password',
-    supervisorEmail: 'Line lead email',
-    submitSignIn: 'Open the hangar board',
-    submitRegister: 'Create crew account',
-    submitting: 'Checking you in…',
-    toggleToRegister: 'First time here? Create an account',
-    toggleToSignIn: 'Already on the roster? Sign in',
+    supervisorEmail: 'Supervisor email',
+    submitSignIn: 'Go to your board',
+    submitRegister: 'Create account',
+    submitting: 'Signing in…',
+    toggleToRegister: 'New here? Create an account',
+    toggleToSignIn: 'Already have an account? Sign in',
     demoFootnote:
-      'Training accounts: demo@turnover.local and supervisor@turnover.local — password Demo1234!',
-    authFailed: 'Could not sign you in. Check email and password.',
+      'Demo accounts: demo@turnover.local and supervisor@turnover.local — password Demo1234!',
+    authFailed: 'We could not sign you in. Please check your email and password.',
   },
 
   shell: {
     defaultRole: 'Maintenance technician',
-    boardSubtitle: 'Line maintenance · hangar board',
-    signOut: 'Leave the board',
+    boardSubtitle: 'Maintenance shift handoff',
+    signOut: 'Sign out',
     localTime: 'Local time',
-    zuluSuffix: 'Zulu',
+    zuluSuffix: 'UTC',
   },
 
   board: {
-    sectionLabel: 'Hangar board',
-    overviewTitle: 'This shift at a glance',
-    linkLive: 'Hangar link live',
+    sectionLabel: 'Your board',
+    overviewTitle: 'Overview for this shift',
+    linkLive: 'Connected',
     stats: {
-      open: 'Still on the board',
-      highPriority: 'Needs attention now',
-      resolved: 'Turned over this period',
+      open: 'Open handoffs',
+      highPriority: 'High priority',
+      resolved: 'Resolved',
     },
     recordCount: (n: number) =>
-      n === 1 ? '1 entry on this view' : `${n} entries on this view`,
+      n === 1 ? 'Showing 1 item' : `Showing ${n} items`,
     listTitles: {
-      Open: 'Still open',
-      Resolved: 'Already turned over',
-      All: 'Full shift log',
+      Open: 'Open handoffs',
+      Resolved: 'Resolved handoffs',
+      All: 'All handoffs',
     } satisfies Record<StatusFilter, string>,
-    loadFailed: 'The board could not load. Try again in a moment.',
-    resolveFailed: 'Could not close that handoff. Try again.',
+    loadFailed: 'We could not load your board. Please try again in a moment.',
+    resolveFailed: 'We could not close that handoff. Please try again.',
   },
 
   handoff: {
-    logNew: 'Write a handoff',
-    logNewDesc: 'Add an entry for the next crew and your line lead.',
-    assetTag: 'Asset or tail number',
+    logNew: 'Add a handoff',
+    logNewDesc: 'Share an update for the next shift and your supervisor.',
+    assetTag: 'Equipment or aircraft ID',
     assetPlaceholder: 'N123AB, GEN-4, ACFT-01',
-    priority: 'How urgent',
-    squawk: 'What the next crew must know',
+    priority: 'Priority',
+    squawk: 'Notes for the next shift',
     squawkPlaceholder:
-      'Discrepancy, troubleshooting done, parts on order, MEL or deferral status…',
-    submit: 'Post to the shift log',
-    submitting: 'Posting…',
-    createFailed: 'Could not post that handoff.',
-    close: 'Mark turned over',
-    closing: 'Closing…',
+      'What you found, work completed, parts needed, or any follow-up for the next crew…',
+    submit: 'Save handoff',
+    submitting: 'Saving…',
+    createFailed: 'We could not save that handoff. Please try again.',
+    close: 'Mark as resolved',
+    closing: 'Saving…',
     openedBy: (who: string, when: string) => `Opened by ${who} · ${when}`,
-    closedBy: (who: string, when: string) => `Turned over by ${who} · ${when}`,
+    closedBy: (who: string, when: string) => `Resolved by ${who} · ${when}`,
   },
 
   inbox: {
-    title: 'Line lead watch',
-    description: 'Alerts when your crew opens or closes a handoff on your watch.',
-    refresh: 'Update watch',
+    title: 'Supervisor updates',
+    description:
+      'Handoffs from your team appear here when they list you as their supervisor.',
+    refresh: 'Refresh',
     openBadge: (n: number) => (n === 1 ? '1 open' : `${n} open`),
     empty:
-      'Nothing on your watch yet. Crew must list your email as their line lead when they register.',
-    loadFailed: 'Could not load your watch list.',
-    emailed: 'emailed',
-    inAppOnly: 'on the board only',
+      'No updates yet. Team members need to add your email as their supervisor when they register.',
+    loadFailed: 'We could not load supervisor updates. Please try again.',
+    emailed: 'email sent',
+    inAppOnly: 'in app only',
   },
 
   empty: {
     Open: {
-      title: 'Board is clear',
-      body: 'No open handoffs right now. Add one when you find something the next shift must carry.',
+      title: 'No open handoffs',
+      body: 'When something needs to carry to the next shift, add a handoff here.',
     },
     Resolved: {
-      title: 'Nothing turned over yet',
-      body: 'Closed handoffs show here so you can review what left the open list.',
+      title: 'No resolved handoffs yet',
+      body: 'Handoffs you close will appear here for reference.',
     },
     All: {
-      title: 'Shift log is blank',
-      body: 'Post your first handoff to start the turnover trail for this shift.',
+      title: 'No handoffs yet',
+      body: 'Add your first handoff when you are ready to share notes for this shift.',
     },
   } satisfies Record<StatusFilter, { title: string; body: string }>,
 } as const
