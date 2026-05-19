@@ -45,8 +45,8 @@ public static class DatabaseConfiguration
 
         if (provider == DatabaseProvider.PostgreSql)
         {
-            // Render uses PostgreSQL; schema is created from the current model.
             await db.Database.EnsureCreatedAsync();
+            await NotificationSchemaBootstrap.EnsureAsync(db, provider);
             return;
         }
 

@@ -33,5 +33,4 @@ services:
         sync: false
       - key: Email__Enabled
         value: "true"
-      - key: Email__SmtpHost
-        sync: false
+      # Leave Email__SmtpHost unset — notifications use in-app supervisor inbox

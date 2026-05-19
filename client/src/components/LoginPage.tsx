@@ -128,7 +128,11 @@ export function LoginPage({ onAuthenticated }: LoginPageProps) {
         </p>
 
         <p className="mt-4 rounded border border-slate-800 bg-slate-950/50 px-3 py-2 text-xs text-slate-500">
-          Demo: <span className="text-slate-400">demo@turnover.local</span> /{' '}
+          Demo tech: <span className="text-slate-400">demo@turnover.local</span> /{' '}
+          <span className="text-slate-400">Demo1234!</span>
+          <br />
+          Demo supervisor inbox:{' '}
+          <span className="text-slate-400">supervisor@turnover.local</span> /{' '}
           <span className="text-slate-400">Demo1234!</span>
         </p>
       </div>

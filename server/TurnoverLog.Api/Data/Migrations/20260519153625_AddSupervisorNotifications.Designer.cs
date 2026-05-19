@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TurnoverLog.Api.Data;
 
@@ -11,9 +12,11 @@ using TurnoverLog.Api.Data;
 namespace TurnoverLog.Api.Data.Migrations
 {
     [DbContext(typeof(TurnoverLogDbContext))]
-    partial class TurnoverLogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260519153625_AddSupervisorNotifications")]
+    partial class AddSupervisorNotifications
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

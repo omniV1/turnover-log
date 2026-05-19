@@ -1,5 +1,7 @@
 using System.Text;
+using Microsoft.Extensions.Options;
 using TurnoverLog.Api.Configuration;
+using TurnoverLog.Api.Data;
 using TurnoverLog.Api.Extensions;
 using TurnoverLog.Api.Models;
 
@@ -13,15 +15,21 @@ public enum HandoffNotificationEvent
 
 public class HandoffNotificationService
 {
+    private readonly TurnoverLogDbContext _db;
     private readonly IEmailSender _emailSender;
     private readonly EmailSettings _emailSettings;
+    private readonly ILogger<HandoffNotificationService> _logger;
 
     public HandoffNotificationService(
+        TurnoverLogDbContext db,
         IEmailSender emailSender,
-        Microsoft.Extensions.Options.IOptions<EmailSettings> emailSettings)
+        IOptions<EmailSettings> emailSettings,
+        ILogger<HandoffNotificationService> logger)
     {
+        _db = db;
         _emailSender = emailSender;
         _emailSettings = emailSettings.Value;
+        _logger = logger;
     }
 
     public async Task NotifySupervisorAsync(
@@ -32,11 +40,59 @@ public class HandoffNotificationService
     {
         var supervisorEmail = ResolveSupervisorEmail(actingUser);
         if (string.IsNullOrWhiteSpace(supervisorEmail))
-        {
             return;
-        }
 
-        var subject = notificationEvent switch
+        var subject = BuildSubject(entry, notificationEvent);
+        var html = BuildHtml(entry, notificationEvent, actingUser);
+
+        var notification = new SupervisorNotification
+        {
+            Id = Guid.NewGuid(),
+            SupervisorEmail = supervisorEmail,
+            HandoffId = entry.Id,
+            EventType = notificationEvent.ToString(),
+            Subject = subject,
+            BodyHtml = html,
+            EquipmentTag = entry.EquipmentTag,
+            Summary = entry.Summary,
+            CreatedAtUtc = DateTime.UtcNow,
+            EmailSent = false,
+        };
+
+        _db.SupervisorNotifications.Add(notification);
+        await _db.SaveChangesAsync(cancellationToken);
+
+        if (ShouldAttemptEmail())
+        {
+            await _emailSender.SendAsync(supervisorEmail, subject, html, cancellationToken);
+            notification.EmailSent = true;
+            await _db.SaveChangesAsync(cancellationToken);
+            _logger.LogInformation("Supervisor notified by email: {To} {Subject}", supervisorEmail, subject);
+        }
+        else
+        {
+            _logger.LogInformation(
+                "Supervisor notification saved to inbox (no SMTP): {To} {Subject}",
+                supervisorEmail,
+                subject);
+        }
+    }
+
+    private bool ShouldAttemptEmail() =>
+        _emailSettings.Enabled && !string.IsNullOrWhiteSpace(_emailSettings.SmtpHost);
+
+    private string? ResolveSupervisorEmail(ApplicationUser actingUser)
+    {
+        if (!string.IsNullOrWhiteSpace(actingUser.SupervisorEmail))
+            return actingUser.SupervisorEmail.Trim().ToLowerInvariant();
+
+        return string.IsNullOrWhiteSpace(_emailSettings.DefaultSupervisorEmail)
+            ? null
+            : _emailSettings.DefaultSupervisorEmail.Trim().ToLowerInvariant();
+    }
+
+    private static string BuildSubject(HandoffEntry entry, HandoffNotificationEvent notificationEvent) =>
+        notificationEvent switch
         {
             HandoffNotificationEvent.Opened =>
                 $"[Turnover Log] OPEN — {entry.EquipmentTag} ({entry.Severity})",
@@ -44,20 +100,6 @@ public class HandoffNotificationService
                 $"[Turnover Log] CLOSED — {entry.EquipmentTag}",
             _ => $"[Turnover Log] Update — {entry.EquipmentTag}",
         };
-
-        var html = BuildHtml(entry, notificationEvent, actingUser);
-        await _emailSender.SendAsync(supervisorEmail, subject, html, cancellationToken);
-    }
-
-    private string? ResolveSupervisorEmail(ApplicationUser actingUser)
-    {
-        if (!string.IsNullOrWhiteSpace(actingUser.SupervisorEmail))
-            return actingUser.SupervisorEmail.Trim();
-
-        return string.IsNullOrWhiteSpace(_emailSettings.DefaultSupervisorEmail)
-            ? null
-            : _emailSettings.DefaultSupervisorEmail.Trim();
-    }
 
     private static string BuildHtml(HandoffEntry entry, HandoffNotificationEvent evt, ApplicationUser actor)
     {

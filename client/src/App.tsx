@@ -7,6 +7,7 @@ import { CreateHandoffForm } from './components/CreateHandoffForm'
 import { HandoffCard } from './components/HandoffCard'
 import { LoginPage } from './components/LoginPage'
 import { StatusFilterBar } from './components/StatusFilterBar'
+import { SupervisorInbox } from './components/SupervisorInbox'
 import { getErrorMessage } from './lib/errors'
 import {
   handoffListTitle,
@@ -25,6 +26,11 @@ function App() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [resolvingId, setResolvingId] = useState<string | null>(null)
+  const [inboxRefreshKey, setInboxRefreshKey] = useState(0)
+
+  function refreshInbox() {
+    setInboxRefreshKey((k) => k + 1)
+  }
 
   const loadHandoffs = useCallback(async () => {
     setLoading(true)
@@ -58,6 +64,7 @@ function App() {
     try {
       await resolveHandoff(id)
       await loadHandoffs()
+      refreshInbox()
     } catch (e) {
       setError(getErrorMessage(e, 'Failed to resolve handoff'))
     } finally {
@@ -83,7 +90,7 @@ function App() {
           <div>
             <h1 className="text-xl font-semibold tracking-tight">Turnover Log</h1>
             <p className="text-sm text-slate-400">
-              Signed in as {user.displayName} · supervisor notified on open/close
+              Signed in as {user.displayName} · alerts go to supervisor inbox (SMTP optional)
             </p>
           </div>
           <button
@@ -110,7 +117,14 @@ function App() {
           </p>
         )}
 
-        <CreateHandoffForm onCreated={() => void loadHandoffs()} />
+        <SupervisorInbox refreshKey={inboxRefreshKey} />
+
+        <CreateHandoffForm
+          onCreated={() => {
+            void loadHandoffs()
+            refreshInbox()
+          }}
+        />
 
         <StatusFilterBar value={filter} onChange={setFilter} />
 

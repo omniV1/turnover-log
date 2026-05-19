@@ -125,6 +125,7 @@ app.Run();
 static async Task SeedDataAsync(IServiceProvider services, TurnoverLogDbContext db)
 {
     await SeedDemoUserAsync(services);
+    await SeedSupervisorUserAsync(services);
     await SeedHandoffsAsync(db);
 }
 
@@ -159,6 +160,33 @@ static async Task SeedDemoUserAsync(IServiceProvider services)
     {
         var logger = services.GetRequiredService<ILoggerFactory>().CreateLogger("Seed");
         logger.LogWarning("Demo user seed failed: {Errors}",
+            string.Join(", ", result.Errors.Select(e => e.Description)));
+    }
+}
+
+static async Task SeedSupervisorUserAsync(IServiceProvider services)
+{
+    const string supervisorEmail = "supervisor@turnover.local";
+    const string password = "Demo1234!";
+
+    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+    if (await userManager.FindByEmailAsync(supervisorEmail) is not null)
+        return;
+
+    var user = new ApplicationUser
+    {
+        UserName = supervisorEmail,
+        Email = supervisorEmail,
+        EmailConfirmed = true,
+        DisplayName = "supervisor.lead",
+        SupervisorEmail = supervisorEmail,
+    };
+
+    var result = await userManager.CreateAsync(user, password);
+    if (!result.Succeeded)
+    {
+        var logger = services.GetRequiredService<ILoggerFactory>().CreateLogger("Seed");
+        logger.LogWarning("Supervisor user seed failed: {Errors}",
             string.Join(", ", result.Errors.Select(e => e.Description)));
     }
 }

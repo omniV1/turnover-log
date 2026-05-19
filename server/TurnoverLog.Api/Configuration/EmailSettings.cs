@@ -4,10 +4,10 @@ public class EmailSettings
 {
     public const string SectionName = "Email";
 
-    /// <summary>When false, emails are written to logs only.</summary>
+    /// <summary>When false, skip SMTP/outbox; inbox notifications are still saved.</summary>
     public bool Enabled { get; set; } = true;
 
-    /// <summary>Use SMTP when host is set; otherwise log/outbox only.</summary>
+    /// <summary>When set, send email via SMTP. When empty, use in-app supervisor inbox only.</summary>
     public string? SmtpHost { get; set; }
 
     public int SmtpPort { get; set; } = 587;

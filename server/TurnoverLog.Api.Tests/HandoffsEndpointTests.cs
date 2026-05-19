@@ -1,5 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
+using Microsoft.Extensions.DependencyInjection;
+using TurnoverLog.Api.Data;
 using TurnoverLog.Api.DTOs;
 using TurnoverLog.Api.Models;
 using TurnoverLog.Api.Tests.Support;
@@ -136,6 +138,29 @@ public class HandoffsEndpointTests : IClassFixture<TurnoverLogWebApplicationFact
         Assert.Contains("AC-12", email.Subject);
         Assert.Contains("Closed by", email.HtmlBody);
         Assert.Contains("Time open", email.HtmlBody);
+    }
+
+    [Fact]
+    public async Task CreateHandoff_StoresSupervisorInboxNotification()
+    {
+        await _factory.ResetDatabaseAsync();
+
+        const string supervisor = "inbox-only@test.local";
+        var token = await ApiTestClient.RegisterAndGetTokenAsync(
+            _client,
+            $"tech-{Guid.NewGuid():N}@test.local",
+            "Test1234!",
+            supervisor);
+
+        ApiTestClient.SetBearer(_client, token);
+        await ApiTestClient.CreateHandoffAsync(_client, "INB-1", "Inbox test item.");
+
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<TurnoverLogDbContext>();
+        var notification = Assert.Single(
+            db.SupervisorNotifications.Where(n => n.SupervisorEmail == supervisor));
+        Assert.Equal("Opened", notification.EventType);
+        Assert.Equal("INB-1", notification.EquipmentTag);
     }
 
     [Fact]

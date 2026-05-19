@@ -20,22 +20,13 @@ Digital shift handoff board for maintenance teams — open discrepancies, equipm
 
 Handoff routes require a Bearer token. `/api/health` stays public.
 
-### Supervisor email notifications
+### Supervisor notifications (no SMTP required)
 
-Each user registers with a **supervisor email**. When a handoff is **opened** or **closed**, the API emails the supervisor with equipment tag, severity, description, who opened/closed it, UTC timestamps, and time open.
+Each technician registers with a **supervisor email**. When a handoff is **opened** or **closed**, the API saves an alert to the **supervisor inbox** (database).
 
-**Local dev (no SMTP):** Leave `Email:SmtpHost` empty in `appsettings.json`. Messages are written as `.eml` files under `server/TurnoverLog.Api/email-outbox/` (open in Outlook or any mail client).
+**Supervisors:** sign in with the same email your team lists (demo: `supervisor@turnover.local` / `Demo1234!`) and open **Supervisor inbox** at the top of the app.
 
-**Production:** Set SMTP in `appsettings` or environment variables:
-
-| Setting | Example |
-| --- | --- |
-| `Email__SmtpHost` | `smtp.sendgrid.net` |
-| `Email__SmtpPort` | `587` |
-| `Email__SmtpUser` / `Email__SmtpPassword` | API credentials |
-| `Email__FromAddress` | `noreply@yourdomain.com` |
-
-Demo user supervisor: `supervisor@turnover.local`.
+**Optional email:** set `Email__SmtpHost` (and credentials) only if you have SMTP later — otherwise leave it empty on Render and Vercel.
 
 ## Prerequisites
 
