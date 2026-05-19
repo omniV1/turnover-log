@@ -1,5 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { apiGet } from './api/client'
+import { clearSession, getStoredUser, getToken } from './auth/storage'
+import type { StoredUser } from './auth/storage'
+import { LoginPage } from './components/LoginPage'
 import type { HandoffEntry, HealthResponse } from './types/handoff'
 
 function severityLabel(severity: HandoffEntry['severity']) {
@@ -13,44 +16,76 @@ function statusLabel(status: HandoffEntry['status']) {
 }
 
 function App() {
+  const [user, setUser] = useState<StoredUser | null>(() =>
+    getToken() ? getStoredUser() : null,
+  )
   const [health, setHealth] = useState<HealthResponse | null>(null)
   const [handoffs, setHandoffs] = useState<HandoffEntry[]>([])
   const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
+
+  const loadHandoffs = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const [healthRes, handoffsRes] = await Promise.all([
+        apiGet<HealthResponse>('/api/health'),
+        apiGet<HandoffEntry[]>('/api/handoffs?status=Open'),
+      ])
+      setHealth(healthRes)
+      setHandoffs(handoffsRes)
+    } catch (e) {
+      if (e instanceof Error && e.message === 'Unauthorized') {
+        clearSession()
+        setUser(null)
+      } else {
+        setError(e instanceof Error ? e.message : 'Failed to load data')
+      }
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
-    async function load() {
-      try {
-        const [healthRes, handoffsRes] = await Promise.all([
-          apiGet<HealthResponse>('/api/health'),
-          apiGet<HandoffEntry[]>('/api/handoffs?status=Open'),
-        ])
-        setHealth(healthRes)
-        setHandoffs(handoffsRes)
-      } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to load data')
-      } finally {
-        setLoading(false)
-      }
-    }
-    void load()
-  }, [])
+    if (user) void loadHandoffs()
+  }, [user, loadHandoffs])
+
+  function handleLogout() {
+    clearSession()
+    setUser(null)
+    setHandoffs([])
+    setHealth(null)
+  }
+
+  if (!user) {
+    return <LoginPage onAuthenticated={setUser} />
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <header className="border-b border-slate-800 bg-slate-900/80 px-6 py-4">
-        <h1 className="text-xl font-semibold tracking-tight">Turnover Log</h1>
-        <p className="text-sm text-slate-400">
-          Maintenance shift handoff board
-        </p>
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl font-semibold tracking-tight">Turnover Log</h1>
+            <p className="text-sm text-slate-400">
+              Signed in as {user.displayName}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="rounded-lg border border-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-800"
+          >
+            Sign out
+          </button>
+        </div>
       </header>
 
       <main className="mx-auto max-w-3xl px-6 py-8">
         {loading && <p className="text-slate-400">Loading…</p>}
         {error && (
           <p className="rounded border border-red-800 bg-red-950/50 px-4 py-3 text-red-200">
-            {error}. Start the API:{' '}
-            <code className="text-sm">dotnet run --project server/TurnoverLog.Api</code>
+            {error}
           </p>
         )}
 

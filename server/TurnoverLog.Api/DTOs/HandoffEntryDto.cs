@@ -15,5 +15,4 @@ public record HandoffEntryDto(
 public record CreateHandoffRequest(
     string EquipmentTag,
     string Summary,
-    HandoffSeverity Severity,
-    string CreatedBy);
+    HandoffSeverity Severity);

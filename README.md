@@ -6,7 +6,17 @@ Digital shift handoff board for maintenance teams — open discrepancies, equipm
 
 - **API:** ASP.NET Core 8, EF Core, SQL Server (LocalDB), Swagger
 - **Client:** React 18, TypeScript, Vite, Tailwind CSS
-- **Planned:** JWT auth, xUnit tests, Azure + Vercel deploy
+- **Auth:** JWT login/register (demo user below)
+- **Planned:** xUnit tests, Azure + Vercel deploy
+
+### Demo login
+
+| Field | Value |
+| --- | --- |
+| Email | `demo@turnover.local` |
+| Password | `Demo1234!` |
+
+Handoff routes require a Bearer token. `/api/health` stays public.
 
 ## Prerequisites
 

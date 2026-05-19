@@ -8,7 +8,7 @@ globs: "**/*"
 ## Stack
 - API: ASP.NET Core 8, EF Core, SQL Server (LocalDB dev), Swashbuckle
 - Client: React 18, TypeScript, Vite, Tailwind CSS v4
-- Auth (upcoming): JWT — not implemented yet
+- Auth: ASP.NET Identity + JWT Bearer (`/api/auth/login`, `/api/auth/register`)
 
 ## Conventions
 - No secrets in git; use User Secrets and `.env` (client)

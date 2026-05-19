@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TurnoverLog.Api.Data;
@@ -6,6 +8,7 @@ using TurnoverLog.Api.Models;
 
 namespace TurnoverLog.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class HandoffsController : ControllerBase
@@ -55,8 +58,8 @@ public class HandoffsController : ControllerBase
             Summary = request.Summary.Trim(),
             Severity = request.Severity,
             Status = HandoffStatus.Open,
-            CreatedBy = string.IsNullOrWhiteSpace(request.CreatedBy) ? "unknown" : request.CreatedBy.Trim(),
-            CreatedAtUtc = DateTime.UtcNow
+            CreatedBy = GetCurrentUserDisplayName(),
+            CreatedAtUtc = DateTime.UtcNow,
         };
 
         _db.HandoffEntries.Add(entry);
@@ -78,6 +81,12 @@ public class HandoffsController : ControllerBase
 
         return Ok(Map(entry));
     }
+
+    private string GetCurrentUserDisplayName() =>
+        User.FindFirstValue(ClaimTypes.Name)
+        ?? User.FindFirstValue(ClaimTypes.Email)
+        ?? User.Identity?.Name
+        ?? "unknown";
 
     private static HandoffEntryDto Map(HandoffEntry e) =>
         new(e.Id, e.EquipmentTag, e.Summary, e.Severity, e.Status, e.CreatedBy, e.CreatedAtUtc, e.ResolvedAtUtc);

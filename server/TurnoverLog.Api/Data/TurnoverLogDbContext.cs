@@ -1,9 +1,10 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TurnoverLog.Api.Models;
 
 namespace TurnoverLog.Api.Data;
 
-public class TurnoverLogDbContext : DbContext
+public class TurnoverLogDbContext : IdentityDbContext<ApplicationUser>
 {
     public TurnoverLogDbContext(DbContextOptions<TurnoverLogDbContext> options)
         : base(options)
@@ -14,6 +15,8 @@ public class TurnoverLogDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<HandoffEntry>(entity =>
         {
             entity.HasKey(e => e.Id);
