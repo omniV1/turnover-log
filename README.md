@@ -6,17 +6,19 @@ Digital shift handoff board for maintenance teams — open discrepancies, equipm
 
 - **API:** ASP.NET Core 8, EF Core, SQL Server (LocalDB), Swagger
 - **Client:** React 18, TypeScript, Vite, Tailwind CSS
-- **Auth:** JWT login/register (demo user below)
+- **Auth:** JWT login/register (optional demo accounts in README for local try-out)
 - **Notifications:** Supervisor email on handoff open/close (SMTP or local outbox in dev)
 - **Tests:** xUnit integration tests (`server/TurnoverLog.Api.Tests`)
 - **Deploy:** Vercel (client) + Render (API + PostgreSQL) — see [docs/DEPLOY.md](docs/DEPLOY.md)
 
-### Demo login
+### Optional demo login (local / portfolio)
 
-| Field | Value |
-| --- | --- |
-| Email | `demo@turnover.local` |
-| Password | `Demo1234!` |
+The API seeds **accounts only** — no sample handoffs. The board stays empty until you add entries.
+
+| Role | Email | Password |
+| --- | --- | --- |
+| Technician | `demo@turnover.local` | `Demo1234!` |
+| Supervisor | `supervisor@turnover.local` | `Demo1234!` |
 
 Handoff routes require a Bearer token. `/api/health` stays public.
 

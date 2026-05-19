@@ -116,17 +116,15 @@ if (!app.Environment.IsEnvironment("Testing"))
     await app.MigrateTurnoverLogDatabaseAsync(databaseProvider);
 
     using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<TurnoverLogDbContext>();
-    await SeedDataAsync(scope.ServiceProvider, db);
+    await SeedDataAsync(scope.ServiceProvider);
 }
 
 app.Run();
 
-static async Task SeedDataAsync(IServiceProvider services, TurnoverLogDbContext db)
+static async Task SeedDataAsync(IServiceProvider services)
 {
     await SeedDemoUserAsync(services);
     await SeedSupervisorUserAsync(services);
-    await SeedHandoffsAsync(db);
 }
 
 static async Task SeedDemoUserAsync(IServiceProvider services)
@@ -189,66 +187,4 @@ static async Task SeedSupervisorUserAsync(IServiceProvider services)
         logger.LogWarning("Supervisor user seed failed: {Errors}",
             string.Join(", ", result.Errors.Select(e => e.Description)));
     }
-}
-
-static async Task SeedHandoffsAsync(TurnoverLogDbContext db)
-{
-    if (await db.HandoffEntries.AnyAsync())
-        return;
-
-    var now = DateTime.UtcNow;
-    db.HandoffEntries.AddRange(
-        new HandoffEntry
-        {
-            Id = Guid.NewGuid(),
-            EquipmentTag = "AC-001",
-            Summary = "Hydraulic leak noted on left main — pad kept clear, awaiting parts.",
-            Severity = HandoffSeverity.High,
-            Status = HandoffStatus.Open,
-            CreatedBy = "demo.shift-lead",
-            CreatedAtUtc = now.AddHours(-6),
-        },
-        new HandoffEntry
-        {
-            Id = Guid.NewGuid(),
-            EquipmentTag = "AC-014",
-            Summary = "Daily inspection complete; no discrepancies.",
-            Severity = HandoffSeverity.Low,
-            Status = HandoffStatus.Resolved,
-            CreatedBy = "demo.shift-b",
-            CreatedAtUtc = now.AddHours(-12),
-            ResolvedAtUtc = now.AddHours(-10),
-        },
-        new HandoffEntry
-        {
-            Id = Guid.NewGuid(),
-            EquipmentTag = "AC-007",
-            Summary = "Avionics bay door seal worn — replacement ordered.",
-            Severity = HandoffSeverity.Medium,
-            Status = HandoffStatus.Open,
-            CreatedBy = "demo.shift-lead",
-            CreatedAtUtc = now.AddHours(-4),
-        },
-        new HandoffEntry
-        {
-            Id = Guid.NewGuid(),
-            EquipmentTag = "AC-022",
-            Summary = "Brake wear pins at minimum — schedule change before next sortie.",
-            Severity = HandoffSeverity.High,
-            Status = HandoffStatus.Open,
-            CreatedBy = "demo.shift-a",
-            CreatedAtUtc = now.AddHours(-2),
-        },
-        new HandoffEntry
-        {
-            Id = Guid.NewGuid(),
-            EquipmentTag = "AC-003",
-            Summary = "Post-flight walkaround complete; minor paint chip logged.",
-            Severity = HandoffSeverity.Low,
-            Status = HandoffStatus.Open,
-            CreatedBy = "demo.shift-c",
-            CreatedAtUtc = now.AddHours(-1),
-        });
-
-    await db.SaveChangesAsync();
 }

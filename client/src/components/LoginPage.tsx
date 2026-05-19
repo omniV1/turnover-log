@@ -28,10 +28,10 @@ const highlightIcons = [Wrench, Shield] as const
 
 export function LoginPage({ onAuthenticated }: LoginPageProps) {
   const [mode, setMode] = useState<'login' | 'register'>('login')
-  const [email, setEmail] = useState('demo@turnover.local')
-  const [password, setPassword] = useState('Demo1234!')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [displayName, setDisplayName] = useState('')
-  const [supervisorEmail, setSupervisorEmail] = useState('supervisor@turnover.local')
+  const [supervisorEmail, setSupervisorEmail] = useState('')
   const { error, loading, run } = useAsyncAction()
 
   async function handleSubmit(e: React.FormEvent) {
@@ -193,9 +193,6 @@ export function LoginPage({ onAuthenticated }: LoginPageProps) {
         </section>
       </div>
 
-      <p className="pb-6 text-center text-xs text-muted-foreground lg:absolute lg:bottom-4 lg:left-1/2 lg:-translate-x-1/2">
-        {copy.auth.demoFootnote}
-      </p>
     </AviationBackdrop>
   )
 }

@@ -41,8 +41,6 @@ export const copy = {
     submitting: 'Signing in…',
     toggleToRegister: 'New here? Create an account',
     toggleToSignIn: 'Already have an account? Sign in',
-    demoFootnote:
-      'Demo accounts: demo@turnover.local and supervisor@turnover.local — password Demo1234!',
     authFailed: 'We could not sign you in. Please check your email and password.',
   },
 
