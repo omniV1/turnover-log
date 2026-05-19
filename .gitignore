@@ -1,0 +1,42 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.dll
+*.pdb
+TestResults/
+[Dd]ebug/
+[Rr]elease/
+appsettings.Development.json
+appsettings.*.local.json
+secrets.json
+
+# Node / React
+node_modules/
+dist/
+dist-ssr/
+*.local
+.npm
+.env
+.env.*
+!.env.example
+
+# IDE / OS
+.vs/
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Database (local dev)
+*.db
+*.db-shm
+*.db-wal
