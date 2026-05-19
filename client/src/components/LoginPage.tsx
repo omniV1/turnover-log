@@ -1,8 +1,10 @@
 import { useState } from 'react'
-import { ClipboardList } from 'lucide-react'
+import { Shield, Wrench } from 'lucide-react'
 import { login, register } from '@/api/auth'
 import { setSession } from '@/auth/storage'
 import type { StoredUser } from '@/auth/storage'
+import { AviationBackdrop } from '@/components/layout/AviationBackdrop'
+import { BrandMark } from '@/components/layout/BrandMark'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import {
@@ -20,6 +22,19 @@ import { useAsyncAction } from '@/hooks/useAsyncAction'
 interface LoginPageProps {
   onAuthenticated: (user: StoredUser) => void
 }
+
+const highlights = [
+  {
+    icon: Wrench,
+    title: 'Shift turnover',
+    text: 'Document open squawks, work performed, and parts needed before crew change.',
+  },
+  {
+    icon: Shield,
+    title: 'Supervisor alerts',
+    text: 'High-priority items surface in the supervisor inbox for line maintenance leads.',
+  },
+]
 
 export function LoginPage({ onAuthenticated }: LoginPageProps) {
   const [mode, setMode] = useState<'login' | 'register'>('login')
@@ -55,106 +70,143 @@ export function LoginPage({ onAuthenticated }: LoginPageProps) {
   }
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center bg-background px-4 py-10">
-      <div className="mb-8 flex flex-col items-center gap-2 text-center">
-        <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-          <ClipboardList className="size-6" aria-hidden />
-        </div>
-        <h1 className="text-2xl font-semibold tracking-tight">Turnover Log</h1>
-        <p className="max-w-sm text-sm text-muted-foreground">
-          Maintenance shift handoffs — sign in to view and record handoff entries.
-        </p>
+    <AviationBackdrop>
+      <div className="relative mx-auto flex min-h-svh max-w-6xl flex-col lg:flex-row">
+        <section className="flex flex-1 flex-col justify-center px-6 py-12 lg:px-10 lg:py-16">
+          <BrandMark size="lg" showTagline className="mb-10 animate-fade-up" />
+          <h1 className="max-w-lg text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl animate-fade-up [animation-delay:80ms]">
+            Maintenance handoffs built for{' '}
+            <span className="bg-gradient-to-r from-sky-300 to-primary bg-clip-text text-transparent">
+              real line ops
+            </span>
+          </h1>
+          <p className="mt-4 max-w-md text-muted-foreground animate-fade-up [animation-delay:120ms]">
+            Replace scattered notes and radio calls with a single shift board — equipment tags,
+            severity, and supervisor visibility in one place.
+          </p>
+
+          <ul className="mt-10 space-y-4">
+            {highlights.map((item, i) => {
+              const Icon = item.icon
+              return (
+                <li
+                  key={item.title}
+                  className="flex gap-4 rounded-xl border border-border/50 bg-card/40 p-4 backdrop-blur-sm transition-colors hover:border-primary/30 animate-fade-up opacity-0"
+                  style={{
+                    animationDelay: `${180 + i * 80}ms`,
+                    animationFillMode: 'forwards',
+                  }}
+                >
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
+                    <Icon className="size-5" />
+                  </div>
+                  <div>
+                    <p className="font-medium">{item.title}</p>
+                    <p className="mt-0.5 text-sm text-muted-foreground">{item.text}</p>
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+
+        <section className="flex flex-1 items-center justify-center px-6 py-10 lg:border-l lg:border-border/40 lg:px-10">
+          <Card className="w-full max-w-md glass-panel shadow-2xl shadow-primary/5 animate-fade-up [animation-delay:200ms]">
+            <CardHeader>
+              <p className="text-xs font-medium uppercase tracking-widest text-primary">
+                Crew access
+              </p>
+              <CardTitle className="text-2xl">
+                {mode === 'login' ? 'Sign in to the line' : 'Register technician'}
+              </CardTitle>
+              <CardDescription>
+                {mode === 'login'
+                  ? 'Enter your credentials to open the operations board.'
+                  : 'Your supervisor email receives handoff open/close alerts.'}
+              </CardDescription>
+            </CardHeader>
+            <form onSubmit={(e) => void handleSubmit(e)}>
+              <CardContent className="space-y-4">
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+
+                {mode === 'register' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="displayName">Display name</Label>
+                    <Input
+                      id="displayName"
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      placeholder="Alex Technician"
+                      autoComplete="name"
+                    />
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    autoComplete="email"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                  />
+                </div>
+
+                {mode === 'register' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="supervisorEmail">Supervisor email</Label>
+                    <Input
+                      id="supervisorEmail"
+                      type="email"
+                      value={supervisorEmail}
+                      onChange={(e) => setSupervisorEmail(e.target.value)}
+                      required
+                      autoComplete="email"
+                    />
+                  </div>
+                )}
+              </CardContent>
+              <CardFooter className="flex flex-col gap-3">
+                <Button type="submit" className="w-full" size="lg" disabled={loading}>
+                  {loading ? 'Authenticating…' : mode === 'login' ? 'Enter operations board' : 'Create account'}
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="w-full text-muted-foreground"
+                  onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
+                >
+                  {mode === 'login'
+                    ? 'New technician? Register'
+                    : 'Already registered? Sign in'}
+                </Button>
+              </CardFooter>
+            </form>
+          </Card>
+        </section>
       </div>
 
-      <Card className="w-full max-w-md border-border/60 shadow-lg">
-        <CardHeader>
-          <CardTitle>{mode === 'login' ? 'Sign in' : 'Create account'}</CardTitle>
-          <CardDescription>
-            {mode === 'login'
-              ? 'Use your technician credentials.'
-              : 'Register as a technician; supervisor email receives alerts.'}
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={(e) => void handleSubmit(e)}>
-          <CardContent className="space-y-4">
-            {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            {mode === 'register' && (
-              <div className="space-y-2">
-                <Label htmlFor="displayName">Display name</Label>
-                <Input
-                  id="displayName"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Alex Technician"
-                  autoComplete="name"
-                />
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-              />
-            </div>
-
-            {mode === 'register' && (
-              <div className="space-y-2">
-                <Label htmlFor="supervisorEmail">Supervisor email</Label>
-                <Input
-                  id="supervisorEmail"
-                  type="email"
-                  value={supervisorEmail}
-                  onChange={(e) => setSupervisorEmail(e.target.value)}
-                  required
-                  autoComplete="email"
-                />
-              </div>
-            )}
-          </CardContent>
-          <CardFooter className="flex flex-col gap-3">
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Register'}
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              className="w-full text-muted-foreground"
-              onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
-            >
-              {mode === 'login'
-                ? 'Need an account? Register'
-                : 'Already have an account? Sign in'}
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
-
-      <p className="mt-6 text-center text-xs text-muted-foreground">
-        Demo: demo@turnover.local / Demo1234!
+      <p className="pb-6 text-center text-xs text-muted-foreground lg:absolute lg:bottom-4 lg:left-1/2 lg:-translate-x-1/2">
+        Demo crew: demo@turnover.local · supervisor@turnover.local — password Demo1234!
       </p>
-    </div>
+    </AviationBackdrop>
   )
 }

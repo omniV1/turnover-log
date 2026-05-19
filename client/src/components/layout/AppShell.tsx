@@ -1,5 +1,7 @@
-import { ClipboardList, LogOut } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { AviationBackdrop } from '@/components/layout/AviationBackdrop'
+import { BrandMark } from '@/components/layout/BrandMark'
 import { Button } from '@/components/ui/button'
 
 interface AppShellProps {
@@ -9,6 +11,21 @@ interface AppShellProps {
   children: ReactNode
 }
 
+function LiveClock() {
+  const now = new Date()
+  const utc = now.toISOString().slice(11, 16)
+  const local = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+
+  return (
+    <div className="hidden text-right sm:block">
+      <p className="font-mono text-sm font-medium tabular-nums text-foreground">{local}</p>
+      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+        Local · {utc} Z
+      </p>
+    </div>
+  )
+}
+
 export function AppShell({
   displayName,
   subtitle,
@@ -16,28 +33,28 @@ export function AppShell({
   children,
 }: AppShellProps) {
   return (
-    <div className="min-h-svh bg-background">
-      <header className="sticky top-0 z-10 border-b border-border/80 bg-background/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-lg bg-primary/15 text-primary">
-              <ClipboardList className="size-5" aria-hidden />
-            </div>
-            <div>
-              <h1 className="text-lg font-semibold tracking-tight">Turnover Log</h1>
-              <p className="text-xs text-muted-foreground sm:text-sm">
-                {subtitle ?? `Signed in as ${displayName}`}
+    <AviationBackdrop>
+      <header className="sticky top-0 z-20 border-b border-border/50 glass-panel">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6 sm:py-4">
+          <BrandMark size="md" showTagline />
+          <div className="flex items-center gap-3 sm:gap-6">
+            <LiveClock />
+            <div className="hidden h-8 w-px bg-border/80 md:block" />
+            <div className="hidden min-w-0 md:block">
+              <p className="truncate text-sm font-medium">{displayName}</p>
+              <p className="truncate text-xs text-muted-foreground">
+                {subtitle ?? 'Maintenance technician'}
               </p>
             </div>
+            <Button variant="outline" size="sm" onClick={onLogout} className="shrink-0">
+              <LogOut className="size-4" />
+              <span className="hidden sm:inline">Sign out</span>
+            </Button>
           </div>
-          <Button variant="outline" size="sm" onClick={onLogout}>
-            <LogOut className="size-4" />
-            Sign out
-          </Button>
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-8">{children}</main>
-    </div>
+      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">{children}</main>
+    </AviationBackdrop>
   )
 }

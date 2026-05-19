@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Bell, RefreshCw } from 'lucide-react'
+import { Bell, ChevronDown, RefreshCw } from 'lucide-react'
 import { fetchSupervisorInbox } from '@/api/notifications'
 import { getErrorMessage } from '@/lib/errors'
 import { formatUtc } from '@/lib/handoffDisplay'
+import { cn } from '@/lib/utils'
 import type { SupervisorNotification } from '@/types/notification'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
@@ -21,6 +22,7 @@ interface SupervisorInboxProps {
 }
 
 export function SupervisorInbox({ refreshKey }: SupervisorInboxProps) {
+  const [expanded, setExpanded] = useState(true)
   const [items, setItems] = useState<SupervisorNotification[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -41,62 +43,98 @@ export function SupervisorInbox({ refreshKey }: SupervisorInboxProps) {
     void load()
   }, [load, refreshKey])
 
+  const unreadCount = items.filter((n) => n.eventType === 'Opened').length
+
   return (
-    <Card className="mb-6">
+    <Card className="glass-panel">
       <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
-        <div>
-          <CardTitle className="flex items-center gap-2">
-            <Bell className="size-4 text-primary" />
-            Supervisor inbox
+        <div
+          className="min-w-0 flex-1 cursor-pointer"
+          onClick={() => setExpanded((v) => !v)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              setExpanded((v) => !v)
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          aria-expanded={expanded}
+        >
+          <CardTitle className="flex flex-wrap items-center gap-2">
+            <Bell className="size-4 text-amber-400" />
+            Supervisor channel
+            {unreadCount > 0 && (
+              <Badge variant="destructive" className="font-mono text-xs">
+                {unreadCount} open
+              </Badge>
+            )}
+            <ChevronDown
+              className={cn(
+                'size-4 text-muted-foreground transition-transform',
+                expanded && 'rotate-180',
+              )}
+            />
           </CardTitle>
           <CardDescription>
-            Team open/close alerts — no SMTP required. Sign in with your supervisor email.
+            Line-lead alerts when technicians open or close handoffs on your watch.
           </CardDescription>
         </div>
-        <Button variant="outline" size="sm" onClick={() => void load()}>
-          <RefreshCw className="size-4" />
+        <Button variant="outline" size="sm" onClick={() => void load()} className="shrink-0">
+          <RefreshCw className={cn('size-4', loading && 'animate-spin')} />
           Refresh
         </Button>
       </CardHeader>
-      <CardContent className="space-y-3">
-        {loading && (
-          <div className="space-y-2">
-            <Skeleton className="h-14 w-full" />
-            <Skeleton className="h-14 w-full" />
-          </div>
-        )}
-        {error && (
-          <Alert variant="destructive">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-        {!loading && !error && items.length === 0 && (
-          <p className="text-sm text-muted-foreground">
-            No notifications yet. Technicians must list your email as their supervisor when
-            they register.
-          </p>
-        )}
-        {items.map((n) => (
-          <div
-            key={n.id}
-            className="rounded-lg border border-border/80 bg-muted/30 px-3 py-3"
-          >
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="font-mono text-sm font-medium text-primary">
-                {n.equipmentTag}
-              </span>
-              <Badge variant={n.eventType === 'Opened' ? 'default' : 'secondary'}>
-                {n.eventType}
-              </Badge>
+      {expanded && (
+        <CardContent className="space-y-3 border-t border-border/40 pt-4">
+          {loading && (
+            <div className="space-y-2">
+              <Skeleton className="h-16 w-full" />
+              <Skeleton className="h-16 w-full" />
             </div>
-            <p className="mt-1 text-sm text-foreground">{n.summary}</p>
-            <p className="mt-2 text-xs text-muted-foreground">
-              {formatUtc(n.createdAtUtc)}
-              {n.emailSent ? ' · emailed' : ' · in-app only'}
+          )}
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          {!loading && !error && items.length === 0 && (
+            <p className="rounded-lg border border-dashed border-border/60 bg-muted/20 px-4 py-8 text-center text-sm text-muted-foreground">
+              No supervisor traffic yet. Technicians must register with your email as their
+              supervisor contact.
             </p>
-          </div>
-        ))}
-      </CardContent>
+          )}
+          {items.map((n, i) => (
+            <div
+              key={n.id}
+              className={cn(
+                'rounded-lg border px-4 py-3 transition-colors animate-fade-up opacity-0',
+                n.eventType === 'Opened'
+                  ? 'border-amber-500/30 bg-amber-500/5 hover:border-amber-500/50'
+                  : 'border-border/60 bg-muted/20 hover:border-border',
+              )}
+              style={{
+                animationDelay: `${i * 50}ms`,
+                animationFillMode: 'forwards',
+              }}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="font-mono text-sm font-semibold text-primary">
+                  {n.equipmentTag}
+                </span>
+                <Badge variant={n.eventType === 'Opened' ? 'default' : 'secondary'}>
+                  {n.eventType}
+                </Badge>
+              </div>
+              <p className="mt-2 text-sm leading-relaxed">{n.summary}</p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                {formatUtc(n.createdAtUtc)}
+                {n.emailSent ? ' · emailed' : ' · in-app only'}
+              </p>
+            </div>
+          ))}
+        </CardContent>
+      )}
     </Card>
   )
 }
