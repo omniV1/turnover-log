@@ -2,6 +2,9 @@ import { useState } from 'react'
 import { login, register } from '../api/auth'
 import { setSession } from '../auth/storage'
 import type { StoredUser } from '../auth/storage'
+import { useAsyncAction } from '../hooks/useAsyncAction'
+import { primaryButtonClass } from '../styles/forms'
+import { FormError, TextInput } from './ui/FormField'
 
 interface LoginPageProps {
   onAuthenticated: (user: StoredUser) => void
@@ -13,35 +16,31 @@ export function LoginPage({ onAuthenticated }: LoginPageProps) {
   const [password, setPassword] = useState('Demo1234!')
   const [displayName, setDisplayName] = useState('')
   const [supervisorEmail, setSupervisorEmail] = useState('supervisor@turnover.local')
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const { error, loading, run } = useAsyncAction()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setError(null)
-    setLoading(true)
-    try {
-      const response =
-        mode === 'login'
-          ? await login({ email, password })
-          : await register({
-              email,
-              password,
-              supervisorEmail,
-              displayName: displayName.trim() || undefined,
-            })
 
-      const user: StoredUser = {
-        email: response.email,
-        displayName: response.displayName,
+    const response = await run(async () => {
+      if (mode === 'login') {
+        return login({ email, password })
       }
-      setSession(response.token, user)
-      onAuthenticated(user)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Authentication failed')
-    } finally {
-      setLoading(false)
+      return register({
+        email,
+        password,
+        supervisorEmail,
+        displayName: displayName.trim() || undefined,
+      })
+    }, 'Authentication failed')
+
+    if (!response) return
+
+    const user: StoredUser = {
+      email: response.email,
+      displayName: response.displayName,
     }
+    setSession(response.token, user)
+    onAuthenticated(user)
   }
 
   return (
@@ -51,77 +50,52 @@ export function LoginPage({ onAuthenticated }: LoginPageProps) {
         <p className="mt-1 text-sm text-slate-400">Sign in to view shift handoffs</p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm text-slate-400">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100 outline-none focus:border-cyan-600"
-            />
-          </div>
+          <TextInput
+            id="email"
+            label="Email"
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-          <div>
-            <label htmlFor="password" className="block text-sm text-slate-400">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100 outline-none focus:border-cyan-600"
-            />
-          </div>
+          <TextInput
+            id="password"
+            label="Password"
+            type="password"
+            autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
           {mode === 'register' && (
-            <div>
-              <label htmlFor="supervisorEmail" className="block text-sm text-slate-400">
-                Supervisor email (notified on open/close)
-              </label>
-              <input
+            <>
+              <TextInput
                 id="supervisorEmail"
+                label="Supervisor email (notified on open/close)"
                 type="email"
                 required
                 value={supervisorEmail}
                 onChange={(e) => setSupervisorEmail(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100 outline-none focus:border-cyan-600"
               />
-            </div>
-          )}
-
-          {mode === 'register' && (
-            <div>
-              <label htmlFor="displayName" className="block text-sm text-slate-400">
-                Display name (optional)
-              </label>
-              <input
+              <TextInput
                 id="displayName"
+                label="Display name (optional)"
                 type="text"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100 outline-none focus:border-cyan-600"
               />
-            </div>
+            </>
           )}
 
-          {error && (
-            <p className="rounded border border-red-800 bg-red-950/50 px-3 py-2 text-sm text-red-200">
-              {error}
-            </p>
-          )}
+          {error && <FormError message={error} />}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-cyan-700 py-2.5 font-medium text-white hover:bg-cyan-600 disabled:opacity-50"
+            className={`w-full py-2.5 ${primaryButtonClass}`}
           >
             {loading ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}
           </button>

@@ -87,7 +87,9 @@ builder.Services.AddAuthentication(options =>
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<HandoffNotificationService>();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
 

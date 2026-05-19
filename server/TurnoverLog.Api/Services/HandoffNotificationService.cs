@@ -1,6 +1,6 @@
 using System.Text;
-using Microsoft.AspNetCore.Identity;
 using TurnoverLog.Api.Configuration;
+using TurnoverLog.Api.Extensions;
 using TurnoverLog.Api.Models;
 
 namespace TurnoverLog.Api.Services;
@@ -61,7 +61,7 @@ public class HandoffNotificationService
 
     private static string BuildHtml(HandoffEntry entry, HandoffNotificationEvent evt, ApplicationUser actor)
     {
-        var actorName = actor.DisplayName ?? actor.Email ?? "Unknown";
+        var actorName = actor.GetDisplayName();
         var status = evt == HandoffNotificationEvent.Opened ? "OPENED" : "CLOSED";
         var duration = entry.ResolvedAtUtc.HasValue
             ? FormatDuration(entry.CreatedAtUtc, entry.ResolvedAtUtc.Value)

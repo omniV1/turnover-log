@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TurnoverLog.Api.DTOs;
+using TurnoverLog.Api.Extensions;
 using TurnoverLog.Api.Models;
 using TurnoverLog.Api.Services;
 
@@ -35,7 +36,7 @@ public class AuthController : ControllerBase
         if (string.IsNullOrWhiteSpace(request.SupervisorEmail))
             return BadRequest(new { message = "Supervisor email is required." });
 
-        var email = request.Email.Trim().ToLowerInvariant();
+        var email = AuthRequestExtensions.NormalizeEmail(request.Email);
         var existing = await _userManager.FindByEmailAsync(email);
         if (existing is not null)
             return Conflict(new { message = "An account with this email already exists." });
@@ -72,7 +73,7 @@ public class AuthController : ControllerBase
         if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
             return BadRequest(new { message = "Email and password are required." });
 
-        var email = request.Email.Trim().ToLowerInvariant();
+        var email = AuthRequestExtensions.NormalizeEmail(request.Email);
         var user = await _userManager.FindByEmailAsync(email);
         if (user is null)
             return Unauthorized(new { message = "Invalid email or password." });
@@ -90,7 +91,7 @@ public class AuthController : ControllerBase
         return new AuthResponse(
             token,
             user.Email ?? string.Empty,
-            user.DisplayName ?? user.UserName ?? "user",
+            user.GetDisplayName(),
             expires);
     }
 }

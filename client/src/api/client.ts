@@ -38,29 +38,33 @@ async function handleResponse<T>(res: Response): Promise<T> {
   return res.json() as Promise<T>
 }
 
-export async function apiGet<T>(path: string): Promise<T> {
-  const res = await fetch(`${baseUrl}${path}`, {
-    headers: { ...authHeaders() },
-  })
-  return handleResponse<T>(res)
-}
+type HttpMethod = 'GET' | 'POST' | 'PATCH'
 
-export async function apiPost<T>(path: string, body: unknown): Promise<T> {
+async function apiRequest<T>(
+  method: HttpMethod,
+  path: string,
+  body?: unknown,
+): Promise<T> {
   const res = await fetch(`${baseUrl}${path}`, {
-    method: 'POST',
+    method,
     headers: {
-      'Content-Type': 'application/json',
       ...authHeaders(),
+      ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
     },
-    body: JSON.stringify(body),
+    body: body !== undefined ? JSON.stringify(body) : undefined,
   })
+
   return handleResponse<T>(res)
 }
 
-export async function apiPatch<T>(path: string): Promise<T> {
-  const res = await fetch(`${baseUrl}${path}`, {
-    method: 'PATCH',
-    headers: { ...authHeaders() },
-  })
-  return handleResponse<T>(res)
+export function apiGet<T>(path: string) {
+  return apiRequest<T>('GET', path)
+}
+
+export function apiPost<T>(path: string, body: unknown) {
+  return apiRequest<T>('POST', path, body)
+}
+
+export function apiPatch<T>(path: string) {
+  return apiRequest<T>('PATCH', path)
 }

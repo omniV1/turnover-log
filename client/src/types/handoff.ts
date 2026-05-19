@@ -5,8 +5,8 @@ export interface HandoffEntry {
   id: string
   equipmentTag: string
   summary: string
-  severity: HandoffSeverity | number
-  status: HandoffStatus | number
+  severity: HandoffSeverity
+  status: HandoffStatus
   createdBy: string
   createdAtUtc: string
   resolvedBy: string | null
