@@ -1,7 +1,7 @@
 import type { StatusFilter } from '@/lib/handoffDisplay'
 
 /**
- * Turnover Log product voice — warm, plain, and easy to read.
+ * Turnover Log product voice: warm, plain, and easy to read.
  * Maintenance context without heavy jargon; short sentences for clarity.
  */
 export const copy = {
@@ -14,7 +14,7 @@ export const copy = {
     heroTitle: 'Keep your shift notes in one place',
     heroHighlight: 'for maintenance teams',
     heroBody:
-      'Record what is open, what you worked on, and who should be informed — so the next shift can pick up smoothly.',
+      'Record what is open, what you worked on, and who should be informed, so the next shift can pick up smoothly.',
     highlights: [
       {
         title: 'Notes at shift change',

@@ -1,6 +1,6 @@
 # Turnover Log
 
-Digital shift handoff board for maintenance teams — open discrepancies, equipment tags, severity, and sign-off.
+Digital shift handoff board for maintenance teams: open discrepancies, equipment tags, severity, and sign-off.
 
 ## Stack
 
@@ -9,11 +9,11 @@ Digital shift handoff board for maintenance teams — open discrepancies, equipm
 - **Auth:** JWT login/register (optional demo accounts in README for local try-out)
 - **Notifications:** Supervisor email on handoff open/close (SMTP or local outbox in dev)
 - **Tests:** xUnit integration tests (`server/TurnoverLog.Api.Tests`)
-- **Deploy:** Vercel (client) + Render (API + PostgreSQL) — see [docs/DEPLOY.md](docs/DEPLOY.md)
+- **Deploy:** Vercel (client) + Render (API + PostgreSQL). See [docs/DEPLOY.md](docs/DEPLOY.md)
 
 ### Optional demo login (local / portfolio)
 
-The API seeds **accounts only** — no sample handoffs. The board stays empty until you add entries.
+The API seeds **accounts only**, no sample handoffs. The board stays empty until you add entries.
 
 | Role | Email | Password |
 | --- | --- | --- |
@@ -28,7 +28,7 @@ Each technician registers with a **supervisor email**. When a handoff is **opene
 
 **Supervisors:** sign in with the same email your team lists (demo: `supervisor@turnover.local` / `Demo1234!`) and open **Supervisor inbox** at the top of the app.
 
-**Optional email:** set `Email__SmtpHost` (and credentials) only if you have SMTP later — otherwise leave it empty on Render and Vercel.
+**Optional email:** set `Email__SmtpHost` (and credentials) only if you have SMTP later; otherwise leave it empty on Render and Vercel.
 
 ## Prerequisites
 
@@ -57,7 +57,7 @@ Migrations run automatically on startup in Development.
 dotnet test TurnoverLog.sln
 ```
 
-Uses an in-memory database and a fake email sender — no SQL Server or SMTP required. CI runs the same suite on every push.
+Uses an in-memory database and a fake email sender; no SQL Server or SMTP required. CI runs the same suite on every push.
 
 ### 2. Client
 
@@ -92,12 +92,12 @@ Step-by-step: **[docs/DEPLOY.md](docs/DEPLOY.md)**
 
 ## Portfolio
 
-**One-liner:** Live maintenance shift handoff board — technicians log open work with equipment tags and priority; supervisors see open/close updates in-app without SMTP.
+**One-liner:** Live maintenance shift handoff board: technicians log open work with equipment tags and priority; supervisors see open/close updates in-app without SMTP.
 
-**Resume bullet:** Shift handoff board from maintenance background—tail-number entries, supervisor in-app alerts (no SMTP); React/Vercel + .NET/Render/PostgreSQL; xUnit CI. Live at [turnover-log.vercel.app](https://turnover-log.vercel.app).
+**Resume bullet:** Shift handoff board from maintenance background: tail-number entries, supervisor in-app alerts (no SMTP); React/Vercel + .NET/Render/PostgreSQL; xUnit CI. Live at [turnover-log.vercel.app](https://turnover-log.vercel.app).
 
 **Talking points:**
-- Domain shaped by F-22 maintenance background — turnover at crew change, not generic task tracking
+- Domain shaped by F-22 maintenance background: turnover at crew change, not generic task tracking
 - Supervisor path works without email infrastructure (DB inbox first; SMTP optional)
 - Same patterns as production work: REST API, auth, migrations, split deploy (Vercel + Render), automated tests
 

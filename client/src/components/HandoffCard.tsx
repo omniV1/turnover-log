@@ -74,7 +74,7 @@ export function HandoffCard({
           <p className="flex items-center gap-2">
             <CheckCircle2 className="size-3.5 shrink-0 text-emerald-400" aria-hidden />
             {copy.handoff.closedBy(
-              handoff.resolvedBy ?? '—',
+              handoff.resolvedBy ?? 'Unknown',
               formatUtc(handoff.resolvedAtUtc),
             )}
           </p>

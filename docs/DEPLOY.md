@@ -10,7 +10,7 @@
 
 ## 1. API + database on Render
 
-### Option A — Blueprint (recommended)
+### Option A: Blueprint (recommended)
 
 1. Push this repo to GitHub.
 2. [Render Dashboard](https://dashboard.render.com/) → **New** → **Blueprint**.
@@ -28,7 +28,7 @@
 
 **Note:** Free Render web services spin down after inactivity; first request may take ~30s.
 
-### Option B — Manual web service
+### Option B: Manual web service
 
 1. **New** → **PostgreSQL** (free) → note internal connection string.
 2. **New** → **Web Service** → connect repo.
@@ -89,5 +89,5 @@ Preview deployments on `*.vercel.app` are allowed by API CORS automatically. Pro
 | --- | --- |
 | CORS error in browser | Set `ClientOrigin` on Render to exact Vercel origin (https, no trailing slash). |
 | 401 on all handoffs | Clear site localStorage; log in again. |
-| API 502 / timeout | Free tier cold start — wait and retry. |
+| API 502 / timeout | Free tier cold start: wait and retry. |
 | DB connection failed | Confirm `DATABASE_URL` is linked to the web service. |

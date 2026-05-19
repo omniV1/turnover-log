@@ -57,7 +57,7 @@
   --color-ring: var(--ring);
   /* Atkinson: legibility-first body face (not a generic product sans) */
   --font-sans: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
-  /* Barlow Semi Condensed: industrial tags & times — not a coding mono */
+  /* Barlow Semi Condensed: industrial tags & times, not a coding mono */
   --font-tag: "Barlow Semi Condensed", var(--font-sans);
 }
 
