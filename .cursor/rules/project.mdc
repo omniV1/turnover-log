@@ -1,0 +1,21 @@
+---
+description: Turnover Log — ASP.NET Core 8 + React TypeScript
+globs: "**/*"
+---
+
+# Turnover Log
+
+## Stack
+- API: ASP.NET Core 8, EF Core, SQL Server (LocalDB dev), Swashbuckle
+- Client: React 18, TypeScript, Vite, Tailwind CSS v4
+- Auth (upcoming): JWT — not implemented yet
+
+## Conventions
+- No secrets in git; use User Secrets and `.env` (client)
+- New API endpoints need xUnit integration tests when behavior is non-trivial
+- Keep commits small and descriptive
+- API runs on http://localhost:5000; client on http://localhost:5173 with Vite `/api` proxy
+
+## Structure
+- `server/TurnoverLog.Api/` — Web API
+- `client/` — React SPA

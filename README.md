@@ -4,17 +4,59 @@ Digital shift handoff board for maintenance teams — open discrepancies, equipm
 
 ## Stack
 
-- **API:** ASP.NET Core 8, EF Core, JWT
+- **API:** ASP.NET Core 8, EF Core, SQL Server (LocalDB), Swagger
 - **Client:** React 18, TypeScript, Vite, Tailwind CSS
-- **Database:** SQL Server (local) / PostgreSQL or Azure SQL (production TBD)
+- **Planned:** JWT auth, xUnit tests, Azure + Vercel deploy
 
-## Status
+## Prerequisites
 
-🚧 In active development (build-along project).
+- [.NET 8 SDK](https://dotnet.microsoft.com/download)
+- [Node.js 20+](https://nodejs.org/)
+- SQL Server LocalDB (included with Visual Studio) or SQL Server Express
 
 ## Local development
 
-Instructions will be added as the API and client are scaffolded.
+### 1. API
+
+```powershell
+cd server/TurnoverLog.Api
+dotnet run
+```
+
+- API: http://localhost:5000  
+- Swagger: http://localhost:5000/swagger  
+
+Migrations run automatically on startup in Development.
+
+### 2. Client
+
+```powershell
+cd client
+npm install
+npm run dev
+```
+
+- UI: http://localhost:5173  
+- Vite proxies `/api` → `http://localhost:5000`
+
+## Repository layout
+
+```
+turnover-log/
+├── client/                 # React + Vite
+├── server/TurnoverLog.Api/ # ASP.NET Core Web API
+├── TurnoverLog.sln
+└── .github/workflows/      # CI
+```
+
+## Git remote
+
+Create `github.com/omniV1/turnover-log` and push:
+
+```powershell
+git remote add origin https://github.com/omniV1/turnover-log.git
+git push -u origin master
+```
 
 ## License
 
