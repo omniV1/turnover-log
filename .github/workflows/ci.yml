@@ -16,7 +16,7 @@ jobs:
           dotnet-version: '8.0.x'
       - run: dotnet restore TurnoverLog.sln
       - run: dotnet build TurnoverLog.sln --no-restore
-      # dotnet test when test project exists
+      - run: dotnet test TurnoverLog.sln --no-build --verbosity normal
 
   client:
     runs-on: ubuntu-latest

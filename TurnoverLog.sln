@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "server", "server", "{DAD03C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TurnoverLog.Api", "server\TurnoverLog.Api\TurnoverLog.Api.csproj", "{E3C30626-7466-4961-A2BC-4F77EB7DE7D9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TurnoverLog.Api.Tests", "server\TurnoverLog.Api.Tests\TurnoverLog.Api.Tests.csproj", "{10E22E83-67C4-4E22-AA06-CFC25D8DDFDE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,11 +31,24 @@ Global
 		{E3C30626-7466-4961-A2BC-4F77EB7DE7D9}.Release|x64.Build.0 = Release|Any CPU
 		{E3C30626-7466-4961-A2BC-4F77EB7DE7D9}.Release|x86.ActiveCfg = Release|Any CPU
 		{E3C30626-7466-4961-A2BC-4F77EB7DE7D9}.Release|x86.Build.0 = Release|Any CPU
+		{10E22E83-67C4-4E22-AA06-CFC25D8DDFDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10E22E83-67C4-4E22-AA06-CFC25D8DDFDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10E22E83-67C4-4E22-AA06-CFC25D8DDFDE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{10E22E83-67C4-4E22-AA06-CFC25D8DDFDE}.Debug|x64.Build.0 = Debug|Any CPU
+		{10E22E83-67C4-4E22-AA06-CFC25D8DDFDE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{10E22E83-67C4-4E22-AA06-CFC25D8DDFDE}.Debug|x86.Build.0 = Debug|Any CPU
+		{10E22E83-67C4-4E22-AA06-CFC25D8DDFDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10E22E83-67C4-4E22-AA06-CFC25D8DDFDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10E22E83-67C4-4E22-AA06-CFC25D8DDFDE}.Release|x64.ActiveCfg = Release|Any CPU
+		{10E22E83-67C4-4E22-AA06-CFC25D8DDFDE}.Release|x64.Build.0 = Release|Any CPU
+		{10E22E83-67C4-4E22-AA06-CFC25D8DDFDE}.Release|x86.ActiveCfg = Release|Any CPU
+		{10E22E83-67C4-4E22-AA06-CFC25D8DDFDE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{E3C30626-7466-4961-A2BC-4F77EB7DE7D9} = {DAD03CFC-D5FA-AC94-41C7-9ABAB326F09E}
+		{10E22E83-67C4-4E22-AA06-CFC25D8DDFDE} = {DAD03CFC-D5FA-AC94-41C7-9ABAB326F09E}
 	EndGlobalSection
 EndGlobal

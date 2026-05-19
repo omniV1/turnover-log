@@ -8,7 +8,8 @@ Digital shift handoff board for maintenance teams — open discrepancies, equipm
 - **Client:** React 18, TypeScript, Vite, Tailwind CSS
 - **Auth:** JWT login/register (demo user below)
 - **Notifications:** Supervisor email on handoff open/close (SMTP or local outbox in dev)
-- **Planned:** xUnit tests, Azure + Vercel deploy
+- **Tests:** xUnit integration tests (`server/TurnoverLog.Api.Tests`)
+- **Planned:** Azure + Vercel deploy
 
 ### Demo login
 
@@ -56,6 +57,14 @@ dotnet run
 
 Migrations run automatically on startup in Development.
 
+### Tests
+
+```powershell
+dotnet test TurnoverLog.sln
+```
+
+Uses an in-memory database and a fake email sender — no SQL Server or SMTP required. CI runs the same suite on every push.
+
 ### 2. Client
 
 ```powershell
@@ -71,10 +80,11 @@ npm run dev
 
 ```
 turnover-log/
-├── client/                 # React + Vite
-├── server/TurnoverLog.Api/ # ASP.NET Core Web API
+├── client/                      # React + Vite
+├── server/TurnoverLog.Api/      # ASP.NET Core Web API
+├── server/TurnoverLog.Api.Tests/ # xUnit integration tests
 ├── TurnoverLog.sln
-└── .github/workflows/      # CI
+└── .github/workflows/           # CI
 ```
 
 ## Git remote
