@@ -1,5 +1,17 @@
-import { formatUtc, isHandoffOpen } from '../lib/handoffDisplay'
-import type { HandoffEntry } from '../types/handoff'
+import { CheckCircle2, Clock } from 'lucide-react'
+import { formatUtc, isHandoffOpen } from '@/lib/handoffDisplay'
+import { severityBadgeVariant } from '@/lib/severity'
+import type { HandoffEntry } from '@/types/handoff'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 
 interface HandoffCardProps {
   handoff: HandoffEntry
@@ -11,35 +23,39 @@ export function HandoffCard({ handoff, resolving, onResolve }: HandoffCardProps)
   const open = isHandoffOpen(handoff)
 
   return (
-    <li className="rounded-lg border border-slate-800 bg-slate-900 p-4">
-      <div className="flex items-start justify-between gap-4">
-        <span className="font-mono text-sm text-cyan-400">{handoff.equipmentTag}</span>
-        <span className="rounded bg-amber-900/50 px-2 py-0.5 text-xs text-amber-200">
-          {handoff.severity}
-        </span>
-      </div>
-      <p className="mt-2 text-slate-300">{handoff.summary}</p>
-      <p className="mt-2 text-xs text-slate-500">
-        Opened by {handoff.createdBy} · {formatUtc(handoff.createdAtUtc)}
-      </p>
-      {handoff.resolvedAtUtc && (
-        <p className="mt-1 text-xs text-slate-500">
-          Closed by {handoff.resolvedBy ?? '—'} · {formatUtc(handoff.resolvedAtUtc)}
+    <Card>
+      <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
+        <div className="space-y-1">
+          <CardTitle className="font-mono text-base">{handoff.equipmentTag}</CardTitle>
+          <CardDescription className="line-clamp-3">{handoff.summary}</CardDescription>
+        </div>
+        <Badge variant={severityBadgeVariant(handoff.severity)}>{handoff.severity}</Badge>
+      </CardHeader>
+      <CardContent className="space-y-2 text-sm text-muted-foreground">
+        <p className="flex items-center gap-2">
+          <Clock className="size-3.5 shrink-0" />
+          Opened by {handoff.createdBy} · {formatUtc(handoff.createdAtUtc)}
         </p>
-      )}
-      <div className="mt-3 flex items-center justify-between gap-4">
-        <p className="text-xs text-slate-600">{handoff.status}</p>
+        {handoff.resolvedAtUtc && (
+          <p className="flex items-center gap-2">
+            <CheckCircle2 className="size-3.5 shrink-0 text-primary" />
+            Closed by {handoff.resolvedBy ?? '—'} · {formatUtc(handoff.resolvedAtUtc)}
+          </p>
+        )}
+      </CardContent>
+      <CardFooter className="flex items-center justify-between gap-4">
+        <Badge variant={open ? 'outline' : 'secondary'}>{handoff.status}</Badge>
         {open && (
-          <button
-            type="button"
+          <Button
+            size="sm"
+            variant="secondary"
             disabled={resolving}
             onClick={() => onResolve(handoff.id)}
-            className="rounded border border-emerald-800 px-3 py-1 text-xs text-emerald-300 hover:bg-emerald-950 disabled:opacity-50"
           >
-            {resolving ? 'Closing…' : 'Close (notify supervisor)'}
-          </button>
+            {resolving ? 'Closing…' : 'Close handoff'}
+          </Button>
         )}
-      </div>
-    </li>
+      </CardFooter>
+    </Card>
   )
 }
