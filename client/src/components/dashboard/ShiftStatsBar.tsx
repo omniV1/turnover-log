@@ -1,4 +1,5 @@
 import { AlertTriangle, ClipboardCheck, Radio } from 'lucide-react'
+import { copy } from '@/lib/copy'
 import { cn } from '@/lib/utils'
 import type { ShiftStats } from './shiftStats'
 
@@ -11,7 +12,7 @@ interface ShiftStatsBarProps {
 const statCards = [
   {
     key: 'open' as const,
-    label: 'Open items',
+    label: copy.board.stats.open,
     icon: Radio,
     gradient: 'from-sky-500/20',
     iconClass: 'text-sky-300',
@@ -19,7 +20,7 @@ const statCards = [
   },
   {
     key: 'highPriority' as const,
-    label: 'High priority',
+    label: copy.board.stats.highPriority,
     icon: AlertTriangle,
     gradient: 'from-amber-500/25',
     iconClass: 'text-amber-300',
@@ -27,7 +28,7 @@ const statCards = [
   },
   {
     key: 'resolved' as const,
-    label: 'Resolved',
+    label: copy.board.stats.resolved,
     icon: ClipboardCheck,
     gradient: 'from-emerald-500/20',
     iconClass: 'text-emerald-300',
@@ -37,21 +38,29 @@ const statCards = [
 
 export function ShiftStatsBar({ stats, apiOnline, serviceName }: ShiftStatsBarProps) {
   return (
-    <section className="mb-8 space-y-4">
+    <section className="mb-8 space-y-4" aria-labelledby="shift-overview-heading">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-xs font-medium uppercase tracking-widest text-primary/90">
-            Operations board
+            {copy.board.sectionLabel}
           </p>
-          <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">Shift overview</h2>
+          <h2
+            id="shift-overview-heading"
+            className="text-xl font-semibold tracking-tight sm:text-2xl"
+          >
+            {copy.board.overviewTitle}
+          </h2>
         </div>
         {apiOnline && (
-          <div className="flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs text-emerald-200">
-            <span className="relative flex size-2">
+          <div
+            className="flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs text-emerald-200"
+            role="status"
+          >
+            <span className="relative flex size-2" aria-hidden>
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-60" />
               <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
             </span>
-            Systems online
+            {copy.board.linkLive}
             {serviceName && <span className="text-emerald-200/70">· {serviceName}</span>}
           </div>
         )}
@@ -81,9 +90,7 @@ export function ShiftStatsBar({ stats, apiOnline, serviceName }: ShiftStatsBarPr
                   <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                     {card.label}
                   </p>
-                  <p className="mt-1 font-mono text-3xl font-semibold tabular-nums">
-                    {stats[card.key]}
-                  </p>
+                  <p className="mt-1 font-tag text-3xl font-semibold">{stats[card.key]}</p>
                 </div>
                 <div
                   className={cn(
@@ -91,7 +98,7 @@ export function ShiftStatsBar({ stats, apiOnline, serviceName }: ShiftStatsBarPr
                     card.ring,
                   )}
                 >
-                  <Icon className={cn('size-5', card.iconClass)} />
+                  <Icon className={cn('size-5', card.iconClass)} aria-hidden />
                 </div>
               </div>
             </div>

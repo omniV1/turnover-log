@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ChevronDown, Plus } from 'lucide-react'
 import { createHandoff } from '@/api/handoffs'
 import { useAsyncAction } from '@/hooks/useAsyncAction'
+import { copy } from '@/lib/copy'
 import { cn } from '@/lib/utils'
 import type { HandoffSeverity } from '@/types/handoff'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -47,7 +48,7 @@ export function CreateHandoffForm({ onCreated }: CreateHandoffFormProps) {
           summary: summary.trim(),
           severity,
         }),
-      'Failed to create handoff',
+      copy.handoff.createFailed,
     )
 
     if (!created) return
@@ -76,18 +77,17 @@ export function CreateHandoffForm({ onCreated }: CreateHandoffFormProps) {
         <div className="flex items-start justify-between gap-2">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <Plus className="size-4 text-primary" />
-              Log new handoff
+              <Plus className="size-4 text-primary" aria-hidden />
+              {copy.handoff.logNew}
             </CardTitle>
-            <CardDescription>
-              Record equipment findings for shift turnover and supervisor visibility.
-            </CardDescription>
+            <CardDescription>{copy.handoff.logNewDesc}</CardDescription>
           </div>
           <ChevronDown
             className={cn(
               'size-5 shrink-0 text-muted-foreground transition-transform duration-200',
               expanded && 'rotate-180',
             )}
+            aria-hidden
           />
         </div>
       </CardHeader>
@@ -96,18 +96,18 @@ export function CreateHandoffForm({ onCreated }: CreateHandoffFormProps) {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="equipmentTag">Equipment / tail tag</Label>
+                <Label htmlFor="equipmentTag">{copy.handoff.assetTag}</Label>
                 <Input
                   id="equipmentTag"
                   required
-                  className="font-mono uppercase"
-                  placeholder="N123AB · GEN-4 · ACFT-01"
+                  className="font-tag uppercase"
+                  placeholder={copy.handoff.assetPlaceholder}
                   value={equipmentTag}
                   onChange={(e) => setEquipmentTag(e.target.value)}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="severity">Priority</Label>
+                <Label htmlFor="severity">{copy.handoff.priority}</Label>
                 <Select
                   value={severity}
                   onValueChange={(value) => setSeverity(value as HandoffSeverity)}
@@ -126,12 +126,12 @@ export function CreateHandoffForm({ onCreated }: CreateHandoffFormProps) {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="summary">Squawk / work performed</Label>
+              <Label htmlFor="summary">{copy.handoff.squawk}</Label>
               <Textarea
                 id="summary"
                 required
                 rows={3}
-                placeholder="Describe the discrepancy, troubleshooting steps, parts ordered, or MEL status…"
+                placeholder={copy.handoff.squawkPlaceholder}
                 value={summary}
                 onChange={(e) => setSummary(e.target.value)}
               />
@@ -142,7 +142,7 @@ export function CreateHandoffForm({ onCreated }: CreateHandoffFormProps) {
               </Alert>
             )}
             <Button type="submit" disabled={loading} className="w-full sm:w-auto">
-              {loading ? 'Submitting…' : 'Submit to shift log'}
+              {loading ? copy.handoff.submitting : copy.handoff.submit}
             </Button>
           </form>
         </CardContent>

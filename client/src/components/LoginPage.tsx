@@ -18,23 +18,13 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAsyncAction } from '@/hooks/useAsyncAction'
+import { copy } from '@/lib/copy'
 
 interface LoginPageProps {
   onAuthenticated: (user: StoredUser) => void
 }
 
-const highlights = [
-  {
-    icon: Wrench,
-    title: 'Shift turnover',
-    text: 'Document open squawks, work performed, and parts needed before crew change.',
-  },
-  {
-    icon: Shield,
-    title: 'Supervisor alerts',
-    text: 'High-priority items surface in the supervisor inbox for line maintenance leads.',
-  },
-]
+const highlightIcons = [Wrench, Shield] as const
 
 export function LoginPage({ onAuthenticated }: LoginPageProps) {
   const [mode, setMode] = useState<'login' | 'register'>('login')
@@ -57,7 +47,7 @@ export function LoginPage({ onAuthenticated }: LoginPageProps) {
         supervisorEmail,
         displayName: displayName.trim() || undefined,
       })
-    }, 'Authentication failed')
+    }, copy.auth.authFailed)
 
     if (!response) return
 
@@ -75,19 +65,18 @@ export function LoginPage({ onAuthenticated }: LoginPageProps) {
         <section className="flex flex-1 flex-col justify-center px-6 py-12 lg:px-10 lg:py-16">
           <BrandMark size="lg" showTagline className="mb-10 animate-fade-up" />
           <h1 className="max-w-lg text-3xl font-bold leading-tight tracking-tight sm:text-4xl lg:text-5xl animate-fade-up [animation-delay:80ms]">
-            Maintenance handoffs built for{' '}
+            {copy.auth.heroTitle}{' '}
             <span className="bg-gradient-to-r from-sky-300 to-primary bg-clip-text text-transparent">
-              real line ops
+              {copy.auth.heroHighlight}
             </span>
           </h1>
           <p className="mt-4 max-w-md text-muted-foreground animate-fade-up [animation-delay:120ms]">
-            Replace scattered notes and radio calls with a single shift board — equipment tags,
-            severity, and supervisor visibility in one place.
+            {copy.auth.heroBody}
           </p>
 
           <ul className="mt-10 space-y-4">
-            {highlights.map((item, i) => {
-              const Icon = item.icon
+            {copy.auth.highlights.map((item, i) => {
+              const Icon = highlightIcons[i] ?? Wrench
               return (
                 <li
                   key={item.title}
@@ -98,7 +87,7 @@ export function LoginPage({ onAuthenticated }: LoginPageProps) {
                   }}
                 >
                   <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
-                    <Icon className="size-5" />
+                    <Icon className="size-5" aria-hidden />
                   </div>
                   <div>
                     <p className="font-medium">{item.title}</p>
@@ -114,15 +103,13 @@ export function LoginPage({ onAuthenticated }: LoginPageProps) {
           <Card className="w-full max-w-md glass-panel shadow-2xl shadow-primary/5 animate-fade-up [animation-delay:200ms]">
             <CardHeader>
               <p className="text-xs font-medium uppercase tracking-widest text-primary">
-                Crew access
+                {copy.auth.accessLabel}
               </p>
               <CardTitle className="text-2xl">
-                {mode === 'login' ? 'Sign in to the line' : 'Register technician'}
+                {mode === 'login' ? copy.auth.signInTitle : copy.auth.registerTitle}
               </CardTitle>
               <CardDescription>
-                {mode === 'login'
-                  ? 'Enter your credentials to open the operations board.'
-                  : 'Your supervisor email receives handoff open/close alerts.'}
+                {mode === 'login' ? copy.auth.signInDesc : copy.auth.registerDesc}
               </CardDescription>
             </CardHeader>
             <form onSubmit={(e) => void handleSubmit(e)}>
@@ -135,19 +122,19 @@ export function LoginPage({ onAuthenticated }: LoginPageProps) {
 
                 {mode === 'register' && (
                   <div className="space-y-2">
-                    <Label htmlFor="displayName">Display name</Label>
+                    <Label htmlFor="displayName">{copy.auth.displayName}</Label>
                     <Input
                       id="displayName"
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
-                      placeholder="Alex Technician"
+                      placeholder={copy.auth.displayNamePlaceholder}
                       autoComplete="name"
                     />
                   </div>
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{copy.auth.email}</Label>
                   <Input
                     id="email"
                     type="email"
@@ -159,7 +146,7 @@ export function LoginPage({ onAuthenticated }: LoginPageProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">{copy.auth.password}</Label>
                   <Input
                     id="password"
                     type="password"
@@ -172,7 +159,7 @@ export function LoginPage({ onAuthenticated }: LoginPageProps) {
 
                 {mode === 'register' && (
                   <div className="space-y-2">
-                    <Label htmlFor="supervisorEmail">Supervisor email</Label>
+                    <Label htmlFor="supervisorEmail">{copy.auth.supervisorEmail}</Label>
                     <Input
                       id="supervisorEmail"
                       type="email"
@@ -186,7 +173,11 @@ export function LoginPage({ onAuthenticated }: LoginPageProps) {
               </CardContent>
               <CardFooter className="flex flex-col gap-3">
                 <Button type="submit" className="w-full" size="lg" disabled={loading}>
-                  {loading ? 'Authenticating…' : mode === 'login' ? 'Enter operations board' : 'Create account'}
+                  {loading
+                    ? copy.auth.submitting
+                    : mode === 'login'
+                      ? copy.auth.submitSignIn
+                      : copy.auth.submitRegister}
                 </Button>
                 <Button
                   type="button"
@@ -194,9 +185,7 @@ export function LoginPage({ onAuthenticated }: LoginPageProps) {
                   className="w-full text-muted-foreground"
                   onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
                 >
-                  {mode === 'login'
-                    ? 'New technician? Register'
-                    : 'Already registered? Sign in'}
+                  {mode === 'login' ? copy.auth.toggleToRegister : copy.auth.toggleToSignIn}
                 </Button>
               </CardFooter>
             </form>
@@ -205,7 +194,7 @@ export function LoginPage({ onAuthenticated }: LoginPageProps) {
       </div>
 
       <p className="pb-6 text-center text-xs text-muted-foreground lg:absolute lg:bottom-4 lg:left-1/2 lg:-translate-x-1/2">
-        Demo crew: demo@turnover.local · supervisor@turnover.local — password Demo1234!
+        {copy.auth.demoFootnote}
       </p>
     </AviationBackdrop>
   )

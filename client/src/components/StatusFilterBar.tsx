@@ -37,7 +37,7 @@ export function StatusFilterBar({ value, onChange, counts }: StatusFilterBarProp
               <Icon className="size-4 shrink-0" />
               {option}
               {count !== undefined && (
-                <span className="rounded-full bg-background/80 px-1.5 py-0.5 font-mono text-[10px] tabular-nums text-muted-foreground">
+                <span className="rounded-full bg-background/80 px-1.5 py-0.5 font-tag text-[10px] text-muted-foreground">
                   {count}
                 </span>
               )}

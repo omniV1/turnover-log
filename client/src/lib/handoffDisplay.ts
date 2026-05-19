@@ -1,3 +1,4 @@
+import { copy } from '@/lib/copy'
 import type { HandoffEntry, HandoffStatus } from '../types/handoff'
 
 const STATUS_FILTERS = ['Open', 'Resolved', 'All'] as const
@@ -14,14 +15,7 @@ export function isHandoffOpen(entry: HandoffEntry): boolean {
 }
 
 export function handoffListTitle(filter: StatusFilter): string {
-  switch (filter) {
-    case 'Open':
-      return 'Open handoffs'
-    case 'Resolved':
-      return 'Resolved handoffs'
-    default:
-      return 'All handoffs'
-  }
+  return copy.board.listTitles[filter]
 }
 
 export function toApiStatusFilter(

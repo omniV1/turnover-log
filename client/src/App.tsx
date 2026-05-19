@@ -13,6 +13,7 @@ import { computeShiftStats } from '@/components/dashboard/shiftStats'
 import { StatusFilterBar } from '@/components/StatusFilterBar'
 import { SupervisorInbox } from '@/components/SupervisorInbox'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { copy } from '@/lib/copy'
 import { getErrorMessage } from '@/lib/errors'
 import {
   handoffListTitle,
@@ -61,7 +62,7 @@ function App() {
         clearSession()
         setUser(null)
       } else {
-        setError(getErrorMessage(e, 'Failed to load data'))
+        setError(getErrorMessage(e, copy.board.loadFailed))
       }
     } finally {
       setLoading(false)
@@ -83,7 +84,7 @@ function App() {
       await Promise.all([loadHandoffs(), loadAllForStats()])
       refreshInbox()
     } catch (e) {
-      setError(getErrorMessage(e, 'Failed to resolve handoff'))
+      setError(getErrorMessage(e, copy.board.resolveFailed))
     } finally {
       setResolvingId(null)
     }
@@ -115,7 +116,7 @@ function App() {
   return (
     <AppShell
       displayName={user.displayName}
-      subtitle="Line maintenance · shift handoff board"
+      subtitle={copy.shell.boardSubtitle}
       onLogout={handleLogout}
     >
       <ShiftStatsBar
@@ -147,8 +148,8 @@ function App() {
         <div className="mb-4 flex items-baseline justify-between gap-4">
           <h2 className="text-lg font-semibold tracking-tight">{handoffListTitle(filter)}</h2>
           {!loading && handoffs.length > 0 && (
-            <p className="font-mono text-xs text-muted-foreground tabular-nums">
-              {handoffs.length} record{handoffs.length === 1 ? '' : 's'}
+            <p className="font-tag text-xs text-muted-foreground">
+              {copy.board.recordCount(handoffs.length)}
             </p>
           )}
         </div>

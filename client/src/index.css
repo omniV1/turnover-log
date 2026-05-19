@@ -16,7 +16,7 @@
   --secondary: oklch(0.2 0.03 250);
   --secondary-foreground: oklch(0.92 0.01 250);
   --muted: oklch(0.19 0.025 250);
-  --muted-foreground: oklch(0.62 0.03 250);
+  --muted-foreground: oklch(0.68 0.03 250);
   --accent: oklch(0.22 0.035 250);
   --accent-foreground: oklch(0.97 0.01 250);
   --destructive: oklch(0.62 0.2 35);
@@ -55,8 +55,10 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --font-sans: "Outfit", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  /* Atkinson: legibility-first body face (not a generic product sans) */
+  --font-sans: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  /* Barlow Semi Condensed: industrial tags & times — not a coding mono */
+  --font-tag: "Barlow Semi Condensed", var(--font-sans);
 }
 
 @layer base {
@@ -64,14 +66,27 @@
     @apply border-border outline-ring/50;
   }
 
+  html {
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
     @apply min-h-svh bg-background text-foreground antialiased;
     font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.55;
+    letter-spacing: 0.01em;
   }
 
-  code,
-  .font-mono {
-    font-family: var(--font-mono);
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+
+  .font-tag {
+    font-family: var(--font-tag);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
   }
 }
 
@@ -124,4 +139,13 @@
 
 .glass-panel {
   @apply border border-border/60 bg-card/70 backdrop-blur-md;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-pulse-glow {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }

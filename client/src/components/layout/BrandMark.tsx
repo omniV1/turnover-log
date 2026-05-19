@@ -1,4 +1,5 @@
 import { Plane } from 'lucide-react'
+import { copy } from '@/lib/copy'
 import { cn } from '@/lib/utils'
 
 interface BrandMarkProps {
@@ -31,9 +32,7 @@ export function BrandMark({ size = 'md', showTagline = false, className }: Brand
           Turnover<span className="text-primary">Log</span>
         </p>
         {showTagline && (
-          <p className={cn('text-muted-foreground', s.tag)}>
-            Aviation maintenance shift handoff
-          </p>
+          <p className={cn('text-muted-foreground', s.tag)}>{copy.brand.tagline}</p>
         )}
       </div>
     </div>

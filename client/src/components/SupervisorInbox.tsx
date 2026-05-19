@@ -3,6 +3,7 @@ import { Bell, ChevronDown, RefreshCw } from 'lucide-react'
 import { fetchSupervisorInbox } from '@/api/notifications'
 import { getErrorMessage } from '@/lib/errors'
 import { formatUtc } from '@/lib/handoffDisplay'
+import { copy } from '@/lib/copy'
 import { cn } from '@/lib/utils'
 import type { SupervisorNotification } from '@/types/notification'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -33,7 +34,7 @@ export function SupervisorInbox({ refreshKey }: SupervisorInboxProps) {
     try {
       setItems(await fetchSupervisorInbox())
     } catch (e) {
-      setError(getErrorMessage(e, 'Failed to load supervisor inbox'))
+      setError(getErrorMessage(e, copy.inbox.loadFailed))
     } finally {
       setLoading(false)
     }
@@ -43,7 +44,7 @@ export function SupervisorInbox({ refreshKey }: SupervisorInboxProps) {
     void load()
   }, [load, refreshKey])
 
-  const unreadCount = items.filter((n) => n.eventType === 'Opened').length
+  const openCount = items.filter((n) => n.eventType === 'Opened').length
 
   return (
     <Card className="glass-panel">
@@ -62,11 +63,11 @@ export function SupervisorInbox({ refreshKey }: SupervisorInboxProps) {
           aria-expanded={expanded}
         >
           <CardTitle className="flex flex-wrap items-center gap-2">
-            <Bell className="size-4 text-amber-400" />
-            Supervisor channel
-            {unreadCount > 0 && (
-              <Badge variant="destructive" className="font-mono text-xs">
-                {unreadCount} open
+            <Bell className="size-4 text-amber-400" aria-hidden />
+            {copy.inbox.title}
+            {openCount > 0 && (
+              <Badge variant="destructive" className="font-tag text-xs">
+                {copy.inbox.openBadge(openCount)}
               </Badge>
             )}
             <ChevronDown
@@ -74,21 +75,26 @@ export function SupervisorInbox({ refreshKey }: SupervisorInboxProps) {
                 'size-4 text-muted-foreground transition-transform',
                 expanded && 'rotate-180',
               )}
+              aria-hidden
             />
           </CardTitle>
-          <CardDescription>
-            Line-lead alerts when technicians open or close handoffs on your watch.
-          </CardDescription>
+          <CardDescription>{copy.inbox.description}</CardDescription>
         </div>
-        <Button variant="outline" size="sm" onClick={() => void load()} className="shrink-0">
-          <RefreshCw className={cn('size-4', loading && 'animate-spin')} />
-          Refresh
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => void load()}
+          className="shrink-0"
+          aria-label={copy.inbox.refresh}
+        >
+          <RefreshCw className={cn('size-4', loading && 'animate-spin')} aria-hidden />
+          {copy.inbox.refresh}
         </Button>
       </CardHeader>
       {expanded && (
         <CardContent className="space-y-3 border-t border-border/40 pt-4">
           {loading && (
-            <div className="space-y-2">
+            <div className="space-y-2" aria-busy="true">
               <Skeleton className="h-16 w-full" />
               <Skeleton className="h-16 w-full" />
             </div>
@@ -100,8 +106,7 @@ export function SupervisorInbox({ refreshKey }: SupervisorInboxProps) {
           )}
           {!loading && !error && items.length === 0 && (
             <p className="rounded-lg border border-dashed border-border/60 bg-muted/20 px-4 py-8 text-center text-sm text-muted-foreground">
-              No supervisor traffic yet. Technicians must register with your email as their
-              supervisor contact.
+              {copy.inbox.empty}
             </p>
           )}
           {items.map((n, i) => (
@@ -119,7 +124,7 @@ export function SupervisorInbox({ refreshKey }: SupervisorInboxProps) {
               }}
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="font-mono text-sm font-semibold text-primary">
+                <span className="font-tag text-sm font-semibold text-primary">
                   {n.equipmentTag}
                 </span>
                 <Badge variant={n.eventType === 'Opened' ? 'default' : 'secondary'}>
@@ -129,7 +134,7 @@ export function SupervisorInbox({ refreshKey }: SupervisorInboxProps) {
               <p className="mt-2 text-sm leading-relaxed">{n.summary}</p>
               <p className="mt-2 text-xs text-muted-foreground">
                 {formatUtc(n.createdAtUtc)}
-                {n.emailSent ? ' · emailed' : ' · in-app only'}
+                {n.emailSent ? ` · ${copy.inbox.emailed}` : ` · ${copy.inbox.inAppOnly}`}
               </p>
             </div>
           ))}

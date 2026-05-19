@@ -1,5 +1,6 @@
 import { CheckCircle2, Clock, Plane } from 'lucide-react'
 import { formatUtc, isHandoffOpen } from '@/lib/handoffDisplay'
+import { copy } from '@/lib/copy'
 import {
   severityAccentClass,
   severityBadgeVariant,
@@ -52,7 +53,7 @@ export function HandoffCard({
             <Plane className="size-4" aria-hidden />
           </div>
           <div className="space-y-1">
-            <CardTitle className="font-mono text-base tracking-wide">
+            <CardTitle className="font-tag text-lg font-semibold uppercase">
               {handoff.equipmentTag}
             </CardTitle>
             <CardDescription className="line-clamp-3 text-sm leading-relaxed">
@@ -66,13 +67,16 @@ export function HandoffCard({
       </CardHeader>
       <CardContent className="space-y-2 border-t border-border/40 pt-3 text-sm text-muted-foreground">
         <p className="flex items-center gap-2">
-          <Clock className="size-3.5 shrink-0 text-primary/80" />
-          Opened by {handoff.createdBy} · {formatUtc(handoff.createdAtUtc)}
+          <Clock className="size-3.5 shrink-0 text-primary/80" aria-hidden />
+          {copy.handoff.openedBy(handoff.createdBy, formatUtc(handoff.createdAtUtc))}
         </p>
         {handoff.resolvedAtUtc && (
           <p className="flex items-center gap-2">
-            <CheckCircle2 className="size-3.5 shrink-0 text-emerald-400" />
-            Closed by {handoff.resolvedBy ?? '—'} · {formatUtc(handoff.resolvedAtUtc)}
+            <CheckCircle2 className="size-3.5 shrink-0 text-emerald-400" aria-hidden />
+            {copy.handoff.closedBy(
+              handoff.resolvedBy ?? '—',
+              formatUtc(handoff.resolvedAtUtc),
+            )}
           </p>
         )}
       </CardContent>
@@ -87,7 +91,7 @@ export function HandoffCard({
             onClick={() => onResolve(handoff.id)}
             className="bg-primary/90 hover:bg-primary"
           >
-            {resolving ? 'Closing…' : 'Close handoff'}
+            {resolving ? copy.handoff.closing : copy.handoff.close}
           </Button>
         )}
       </CardFooter>

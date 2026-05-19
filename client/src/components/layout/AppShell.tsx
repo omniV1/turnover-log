@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { AviationBackdrop } from '@/components/layout/AviationBackdrop'
 import { BrandMark } from '@/components/layout/BrandMark'
 import { Button } from '@/components/ui/button'
+import { copy } from '@/lib/copy'
 
 interface AppShellProps {
   displayName: string
@@ -17,10 +18,10 @@ function LiveClock() {
   const local = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
   return (
-    <div className="hidden text-right sm:block">
-      <p className="font-mono text-sm font-medium tabular-nums text-foreground">{local}</p>
+    <div className="hidden text-right sm:block" aria-live="polite">
+      <p className="font-tag text-sm font-semibold text-foreground">{local}</p>
       <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
-        Local · {utc} Z
+        {copy.shell.localTime} · {utc} {copy.shell.zuluSuffix}
       </p>
     </div>
   )
@@ -43,12 +44,18 @@ export function AppShell({
             <div className="hidden min-w-0 md:block">
               <p className="truncate text-sm font-medium">{displayName}</p>
               <p className="truncate text-xs text-muted-foreground">
-                {subtitle ?? 'Maintenance technician'}
+                {subtitle ?? copy.shell.defaultRole}
               </p>
             </div>
-            <Button variant="outline" size="sm" onClick={onLogout} className="shrink-0">
-              <LogOut className="size-4" />
-              <span className="hidden sm:inline">Sign out</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onLogout}
+              className="shrink-0"
+              aria-label={copy.shell.signOut}
+            >
+              <LogOut className="size-4" aria-hidden />
+              <span className="hidden sm:inline">{copy.shell.signOut}</span>
             </Button>
           </div>
         </div>
