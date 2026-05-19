@@ -90,6 +90,17 @@ turnover-log/
 
 Step-by-step: **[docs/DEPLOY.md](docs/DEPLOY.md)**
 
+## Portfolio
+
+**One-liner:** Live maintenance shift handoff board — technicians log open work with equipment tags and priority; supervisors see open/close updates in-app without SMTP.
+
+**Resume bullet:** Built and deployed Turnover Log, a full-stack shift handoff app (React, ASP.NET Core 8, PostgreSQL, JWT) with supervisor inbox notifications, xUnit integration tests, and CI — live at [turnover-log.vercel.app](https://turnover-log.vercel.app).
+
+**Talking points:**
+- Domain shaped by F-22 maintenance background — turnover at crew change, not generic task tracking
+- Supervisor path works without email infrastructure (DB inbox first; SMTP optional)
+- Same patterns as production work: REST API, auth, migrations, split deploy (Vercel + Render), automated tests
+
 ## License
 
 Private portfolio / learning project.
